@@ -1,0 +1,166 @@
+{
+  "name": "listen",
+  "displayName": "Listen!",
+  "description": "Listen to podcasts and radio streams while coding.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.78.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "listen.addPodcast",
+        "title": "Add Podcast"
+      },
+      {
+        "command": "listen.addRadioStream",
+        "title": "Add Radio Stream"
+      },
+      {
+        "command": "listen.refreshAllPodcasts",
+        "title": "Update All Podcasts"
+      },
+      {
+        "command": "listen.refreshPodcast",
+        "title": "Update Podcast",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        }
+      },
+      {
+        "command": "listen.removePodcast",
+        "title": "Remove Podcast",
+        "icon": {
+          "light": "resources/light/remove.svg",
+          "dark": "resources/dark/remove.svg"
+        }
+      },
+      {
+        "command": "listen.refreshPodcasts",
+        "title": "Update All Podcasts",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        }
+      },
+      {
+        "command": "listen.removeRadio",
+        "title": "Remove Radio",
+        "icon": {
+          "light": "resources/light/remove.svg",
+          "dark": "resources/dark/remove.svg"
+        }
+      },
+      {
+        "command": "listen.addToQueue",
+        "title": "Add to Queue"
+      },
+      {
+        "command": "listen.removeFromQueue",
+        "title": "Remove from Queue"
+      },
+      {
+        "command": "listen.play",
+        "title": "Play"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "listen",
+          "title": "Listen!",
+          "icon": "resources/listen-activity.png"
+        }
+      ]
+    },
+    "views": {
+      "listen": [
+        {
+          "id": "listenLibrary",
+          "name": "Library"
+        },
+        {
+          "id": "listenQueue",
+          "name": "Queue"
+        },
+        {
+          "type": "webview",
+          "id": "listenPlayer",
+          "name": "Player"
+        }
+      ]
+    },
+    "activationEvents": [
+      "onView:calicoColors.colorsView"
+  ],
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "listen.addPodcast",
+          "when": "view == listenLibrary && viewItem == Podcasts"
+        },
+        {
+          "command": "listen.refreshAllPodcasts",
+          "when": "view == listenLibrary && viewItem == Podcasts"
+        },
+        {
+          "command": "listen.addToQueue",
+          "when": "view == listenLibrary && (viewItem == episode || viewItem == radio)"
+        },
+        {
+          "command": "listen.refreshPodcast",
+          "when": "view == listenLibrary && viewItem == podcast"
+        },
+        {
+          "command": "listen.removePodcast",
+          "when": "view == listenLibrary && viewItem == podcast"
+        },
+        {
+          "command": "listen.removeRadio",
+          "when": "view == listenLibrary && viewItem == radio"
+        },
+        {
+          "command": "listen.removeFromQueue",
+          "when": "view == listenQueue && viewItem == queue"
+        },
+        {
+          "command": "listen.play",
+          "when": "viewItem == episode || viewItem == radio || viewItem == queue"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "16.x",
+    "@types/vscode": "^1.78.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@typescript-eslint/parser": "^5.59.1",
+    "@vscode/test-electron": "^2.3.0",
+    "eslint": "^8.39.0",
+    "glob": "^8.1.0",
+    "mocha": "^10.2.0",
+    "ts-loader": "^9.4.2",
+    "typescript": "^5.0.4",
+    "webpack": "^5.81.0",
+    "webpack-cli": "^5.0.2"
+  }
+}
