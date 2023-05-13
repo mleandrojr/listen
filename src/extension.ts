@@ -46,27 +46,33 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     const disposables = [
-        vscode.commands.registerCommand("listen.addPodcast", podcast.openDialog),
-        vscode.commands.registerCommand("listen.addRadioStream", radio.openDialog),
-
-        vscode.commands.registerCommand("listen.refreshAllPodcasts", () => {
-            vscode.window.showInformationMessage("Updating all podcasts");
-        }),
-
-        vscode.commands.registerCommand("listen.refreshPodcast", (podcastItem: PodcastItem) => {
-            vscode.window.showInformationMessage(`Updating ${podcastItem.label}`);
-            podcast.refresh(podcastItem.feed);
+        vscode.commands.registerCommand("listen.addPodcast", async () => {
+            await podcast.openDialog();
             libraryProvider.refresh(library.init());
         }),
+
+        vscode.commands.registerCommand("listen.refreshAllPodcasts", async () => {
+            vscode.window.showInformationMessage("Updating all podcasts");
+            libraryProvider.refresh(library.init());
+        }),
+
+        vscode.commands.registerCommand("listen.refreshPodcast", async (podcastItem: PodcastItem) => {
+            vscode.window.showInformationMessage(`Updating ${podcastItem.label}`);
+            await podcast.refresh(podcastItem.feed);
+            libraryProvider.refresh(library.init());
+        }),
+
+        vscode.commands.registerCommand("listen.removePodcast", async (podcastItem: PodcastItem) => {
+            await podcast.remove(podcastItem);
+            libraryProvider.refresh(library.init());
+        }),
+        vscode.commands.registerCommand("listen.addRadioStream", radio.openDialog),
+
+
 
         vscode.commands.registerCommand("listen.removeRadio", async (item) => {
             radio.remove(item);
             libraryProvider.refresh(library.init());
-        }),
-
-        vscode.commands.registerCommand("listen.removePodcast", async (item) => {
-            queue.add(item);
-            queueProvider.refresh(queue.init());
         }),
 
         vscode.commands.registerCommand("listen.addToQueue", async (item) => {

@@ -3,6 +3,7 @@ import fetch from 'node-fetch';
 import { XMLParser } from 'fast-xml-parser';
 import { PodcastType } from '../types/podcast';
 import { EpisodeType } from '../types/episode';
+import { PodcastItem } from './treeItem';
 
 export default class Podcast {
 
@@ -28,8 +29,7 @@ export default class Podcast {
         });
 
         if (feed && feed.length) {
-            this.add(feed);
-            return;
+            await this.add(feed);
         }
     };
 
@@ -62,7 +62,7 @@ export default class Podcast {
             };
 
             await this.context.globalState.update("podcasts", podcasts);
-            await this.addEpisodes(feed, content);
+            this.addEpisodes(feed, content);
 
             vscode.window.showInformationMessage(`The podcast ${content.rss.channel.title} was successfully added.`);
 
@@ -77,6 +77,14 @@ export default class Podcast {
     refresh = async (feed: string): Promise<void> => {
         const content = await this.getFeed(feed);
         this.addEpisodes(feed, content);
+    };
+
+    remove = async (podcastItem: PodcastItem): Promise<void> => {
+
+        const podcasts = <Record<string, PodcastItem>> this.context.globalState.get("podcasts") || {};
+        delete podcasts[podcastItem.feed];
+
+        await this.context.globalState.update("podcasts", podcasts);
     };
 
     private getFeed = async (feed: string): Promise<Record<string, any>|null> => {
@@ -166,7 +174,5 @@ export default class Podcast {
         const parsedEpisodes: Record<string, EpisodeType> = {...newEpisodes, ...episodes};
         storedData[feed].episodes = parsedEpisodes;
         this.context.globalState.update('podcasts', storedData);
-
-        vscode.window.showInformationMessage(`The Podcast ${content.rss.channel.title} was successfully added.`);
     };
 }

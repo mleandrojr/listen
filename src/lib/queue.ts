@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { ContentTreeItem, QueueTreeItem } from "./treeItem";
+import { QueueType } from "../types/queue";
 
 export default class Queue {
 
@@ -14,23 +15,28 @@ export default class Queue {
         return items;
     };
 
-    add = async (item: ContentTreeItem) => {
+    add = async (content: ContentTreeItem) => {
 
-        if (!item.hasOwnProperty("url")) {
+        if (!content.hasOwnProperty("url")) {
             return;
         }
 
-        const items: QueueTreeItem[] = this.context.globalState.get("queue") || [];
+        const queue: Array<QueueType> = this.context.globalState.get("queue") || [];
 
-        for (const position of items) {
-            if (position.url === item.url) {
+        for (const item of queue) {
+            if (item.url === content.url) {
                 return;
             }
         }
 
-        const treeviewItem = new QueueTreeItem(item.url || "", item.label || "");
-        items.push(treeviewItem);
-        this.context.globalState.update("queue", items);
+        const treeviewItem = <QueueType> {
+            url: content.url,
+            label: content.label || "",
+            description: content.description || ""
+        };
+
+        queue.push(treeviewItem);
+        this.context.globalState.update("queue", queue);
     };
 
     remove = async (item: QueueTreeItem) => {
