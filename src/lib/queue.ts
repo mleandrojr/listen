@@ -1,16 +1,32 @@
 import * as vscode from "vscode";
+import QueueProvider from "../providers/queueProvider";
+import PlayerProvider from "../providers/playerProviders";
+import Player from "../lib/player";
 import { ContentTreeItem, QueueTreeItem } from "./treeItem";
 import { QueueType } from "../types/queue";
 
 export default class Queue {
 
     private context: vscode.ExtensionContext;
+    private provider: QueueProvider;
+    private player: Player;
 
-    constructor(context: vscode.ExtensionContext) {
+    constructor(context: vscode.ExtensionContext, provider: QueueProvider) {
         this.context = context;
+        this.provider = provider;
+
+        const playerProvider = new PlayerProvider(context);
+        this.player = new Player(context, playerProvider);
+
+        context.subscriptions.push(
+            vscode.window.registerWebviewViewProvider("listenPlayer", playerProvider)
+        );
+
+        this.refresh();
     }
 
-    init(): QueueTreeItem[] {
+    refresh = () => {
+
         const items: Array<Record<string, string>> = this.context.globalState.get("queue") || [];
         const data = [];
 
@@ -18,7 +34,11 @@ export default class Queue {
             data.push(new QueueTreeItem(item.url, item.label, item.description));
         }
 
-        return data;
+        this.provider.refresh(data);
+    };
+
+    play = async (item: QueueTreeItem) => {
+        this.player.play(item);
     };
 
     add = async (content: ContentTreeItem) => {
@@ -43,6 +63,14 @@ export default class Queue {
 
         queue.push(treeviewItem);
         this.context.globalState.update("queue", queue);
+
+        if (queue.length === 1) {
+            this.player.play(
+                new QueueTreeItem(treeviewItem.url || "", treeviewItem.label || "", treeviewItem.description)
+            );
+        }
+
+        this.refresh();
     };
 
     remove = async (item: QueueTreeItem) => {
@@ -62,5 +90,6 @@ export default class Queue {
         }
 
         this.context.globalState.update("queue", items);
+        this.refresh();
     };
 }

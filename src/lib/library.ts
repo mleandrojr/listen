@@ -1,20 +1,24 @@
-import * as vscode from 'vscode';
-import { PodcastItem, RadioItem, ContentTreeItem } from './treeItem';
+import * as vscode from "vscode";
+import LibraryProvider from "../providers/libraryProvider";
+import { PodcastItem, RadioItem, ContentTreeItem } from "./treeItem";
 
 export default class Library {
 
     private context: vscode.ExtensionContext;
+    private provider: LibraryProvider;
 
-    constructor(context: vscode.ExtensionContext) {
+    constructor(context: vscode.ExtensionContext, provider: LibraryProvider) {
         this.context = context;
+        this.provider = provider;
+        this.refresh();
     }
 
-    init(): ContentTreeItem[] {
-        return [
+    refresh = () => {
+        this.provider.refresh([
             new ContentTreeItem("Podcasts", this.getPodcasts(), vscode.TreeItemCollapsibleState.Expanded),
             new ContentTreeItem("Radio Streams", this.getRadios(), vscode.TreeItemCollapsibleState.Expanded)
-        ];
-    }
+        ]);
+    };
 
     getPodcasts = (): PodcastItem[] => {
 

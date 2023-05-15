@@ -5,10 +5,11 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
 
     public onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined | null | void>;
     private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined | null | void>;
-    private data: QueueTreeItem[];
+    private context: vscode.ExtensionContext;
+    private data: QueueTreeItem[] = [];
 
-    constructor(data: QueueTreeItem[]) {
-        this.data = data;
+    constructor(context: vscode.ExtensionContext) {
+        this.context = context;
         this._onDidChangeTreeData = new vscode.EventEmitter<vscode.TreeItem | undefined | null | void>();
         this.onDidChangeTreeData = this._onDidChangeTreeData.event;
     }

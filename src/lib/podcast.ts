@@ -1,16 +1,19 @@
-import * as vscode from 'vscode';
-import fetch from 'node-fetch';
-import { XMLParser } from 'fast-xml-parser';
-import { PodcastType } from '../types/podcast';
-import { EpisodeType } from '../types/episode';
-import { PodcastItem } from './treeItem';
+import * as vscode from "vscode";
+import fetch from "node-fetch";
+import Library from "./library";
+import { XMLParser } from "fast-xml-parser";
+import { PodcastType } from "../types/podcast";
+import { EpisodeType } from "../types/episode";
+import { PodcastItem } from "./treeItem";
 
 export default class Podcast {
 
     context: vscode.ExtensionContext;
+    library: Library;
 
-    constructor(context: vscode.ExtensionContext) {
+    constructor(context: vscode.ExtensionContext, library: Library) {
         this.context = context;
+        this.library = library;
     }
 
     openDialog = async () => {
@@ -69,14 +72,19 @@ export default class Podcast {
         } catch (error) {
             vscode.window.showErrorMessage(`Invalid URL ${feed}`);
         }
+
+        this.library.refresh();
     };
 
     refreshAll = async () => {
+        this.library.refresh();
     };
 
-    refresh = async (feed: string): Promise<void> => {
-        const content = await this.getFeed(feed);
-        this.addEpisodes(feed, content);
+    refresh = async (podcastItem: PodcastItem): Promise<void> => {
+        vscode.window.showInformationMessage(`Updating ${podcastItem.label}`);
+        const content = await this.getFeed(podcastItem.feed);
+        this.addEpisodes(podcastItem.feed, content);
+        this.library.refresh();
     };
 
     remove = async (podcastItem: PodcastItem): Promise<void> => {
@@ -85,6 +93,9 @@ export default class Podcast {
         delete podcasts[podcastItem.feed];
 
         await this.context.globalState.update("podcasts", podcasts);
+
+        vscode.window.showInformationMessage(`The podcast ${podcastItem.label} was successfully removed.`);
+        this.library.refresh();
     };
 
     private getFeed = async (feed: string): Promise<Record<string, any>|null> => {
@@ -143,7 +154,7 @@ export default class Podcast {
             return;
         }
 
-        const storedData: Record<string, PodcastType>|undefined = this.context.globalState.get('podcasts');
+        const storedData: Record<string, PodcastType>|undefined = this.context.globalState.get("podcasts");
         if (!storedData || !storedData.hasOwnProperty(feed)) {
             return;
         }
@@ -164,7 +175,7 @@ export default class Podcast {
                 description: episodeData.description,
                 link: episodeData.link,
                 pubDate: episodeData.pubDate,
-                duration: episodeData['itunes:duration'],
+                duration: episodeData["itunes:duration"],
                 url: episodeData.enclosure["@_url"],
                 length: episodeData.enclosure["@_length"],
                 new: true
@@ -173,6 +184,6 @@ export default class Podcast {
 
         const parsedEpisodes: Record<string, EpisodeType> = {...newEpisodes, ...episodes};
         storedData[feed].episodes = parsedEpisodes;
-        this.context.globalState.update('podcasts', storedData);
+        this.context.globalState.update("podcasts", storedData);
     };
 }

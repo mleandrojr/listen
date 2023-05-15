@@ -1,0 +1,8 @@
+html, body {
+    height: 100vh !important;
+    width: 100vw !important;
+}
+
+h1 {
+    font-size: 10px;
+}

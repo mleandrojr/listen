@@ -2,9 +2,14 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Audio Player</title>
+        <title>Listen! Audio Player</title>
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; media-src *; style-src {cspSource}; script-src 'nonce-{nonce}';">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="{styleUri}" rel="stylesheet">
     </head>
     <body>
-        <audio id="audioPlayer" src="https://podcast.rota66cast.com.br/Rota66Cast-49-A-Viagem-do-Nelson-Werneck.mp3" controls autoplay></audio>
+        <h1 id="listenAudioTitle"></h1>
+        <audio id="listenAudioPlayer" src="" controls autoplay muted></audio>
+        <script nonce="{nonce}" src="{scriptUri}"></script>
     </body>
 </html>

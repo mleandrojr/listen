@@ -5,10 +5,11 @@ export default class LibraryProvider implements vscode.TreeDataProvider<vscode.T
 
     public onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined | null | void>;
     private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined | null | void>;
-    private data: ContentTreeItem[];
+    private context: vscode.ExtensionContext;
+    private data: ContentTreeItem[] = [];
 
-    constructor(data: ContentTreeItem[]) {
-        this.data = data;
+    constructor(context: vscode.ExtensionContext) {
+        this.context = context;
         this._onDidChangeTreeData = new vscode.EventEmitter<vscode.TreeItem | undefined | null | void>();
         this.onDidChangeTreeData = this._onDidChangeTreeData.event;
     }
@@ -24,7 +25,7 @@ export default class LibraryProvider implements vscode.TreeDataProvider<vscode.T
 
     getChildren(element?: ContentTreeItem|undefined): Promise<ContentTreeItem[]> {
 
-        if (typeof element === 'undefined') {
+        if (typeof element === "undefined") {
             return Promise.resolve(this.data);
         }
 

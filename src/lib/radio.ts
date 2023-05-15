@@ -1,13 +1,16 @@
 import * as vscode from 'vscode';
+import Library from '../lib/library';
 import { RadioType } from '../types/radio';
 import { RadioItem } from './treeItem';
 
 export default class Radio {
 
-    context: vscode.ExtensionContext;
+    private context: vscode.ExtensionContext;
+    private library: Library;
 
-    constructor(context: vscode.ExtensionContext) {
+    constructor(context: vscode.ExtensionContext, library: Library) {
         this.context = context;
+        this.library = library;
     }
 
     openDialog = async () => {
@@ -52,7 +55,9 @@ export default class Radio {
 
         radios[url] = radio;
         await this.context.globalState.update("radios", radios);
+
         vscode.window.showInformationMessage(`The radio stream ${name || url} was successfully added.`);
+        this.library.refresh();
     };
 
     remove = async (radio: RadioItem) => {
@@ -62,6 +67,8 @@ export default class Radio {
 
         const label = radio.label || radio.description;
         await this.context.globalState.update("radios", radios);
+
         vscode.window.showInformationMessage(`The radio stream ${label} was successfully removed.`);
+        this.library.refresh();
     };
 }

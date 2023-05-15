@@ -5,21 +5,22 @@ import Library from "./lib/library";
 import Queue from "./lib/queue";
 import LibraryProvider from "./providers/libraryProvider";
 import QueueProvider from "./providers/queueProvider";
-import PlayerProvider from "./providers/playerProviders";
-import Player from "./lib/player";
-import { PodcastItem } from "./lib/treeItem";
 
 export function activate(context: vscode.ExtensionContext) {
 
     context.globalState.setKeysForSync(["podcasts", "radios"]);
 
-    const podcast = new Podcast(context);
-    const radio = new Radio(context);
-    const library = new Library(context);
-    const queue = new Queue(context);
-    const player = new Player(context);
-    const libraryProvider = new LibraryProvider(library.init());
-    const queueProvider = new QueueProvider(queue.init());
+    /* Data providers. */
+    const libraryProvider = new LibraryProvider(context);
+    const queueProvider = new QueueProvider(context);
+
+
+    const library = new Library(context, libraryProvider);
+    const podcast = new Podcast(context, library);
+    const radio = new Radio(context, library);
+
+    const queue = new Queue(context, queueProvider);
+
 
     // (async () => {
     //     await context.globalState.update("radios", {});
@@ -46,60 +47,20 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     const disposables = [
-        vscode.commands.registerCommand("listen.addPodcast", async () => {
-            await podcast.openDialog();
-            libraryProvider.refresh(library.init());
-        }),
-
-        vscode.commands.registerCommand("listen.refreshAllPodcasts", async () => {
-            vscode.window.showInformationMessage("Updating all podcasts");
-            libraryProvider.refresh(library.init());
-        }),
-
-        vscode.commands.registerCommand("listen.refreshPodcast", async (podcastItem: PodcastItem) => {
-            vscode.window.showInformationMessage(`Updating ${podcastItem.label}`);
-            await podcast.refresh(podcastItem.feed);
-            libraryProvider.refresh(library.init());
-        }),
-
-        vscode.commands.registerCommand("listen.removePodcast", async (podcastItem: PodcastItem) => {
-            await podcast.remove(podcastItem);
-            libraryProvider.refresh(library.init());
-        }),
+        vscode.commands.registerCommand("listen.addPodcast", podcast.openDialog),
+        vscode.commands.registerCommand("listen.refreshAllPodcasts", podcast.refreshAll),
+        vscode.commands.registerCommand("listen.refreshPodcast", podcast.refresh),
+        vscode.commands.registerCommand("listen.removePodcast", podcast.remove),
         vscode.commands.registerCommand("listen.addRadioStream", radio.openDialog),
-
-
-
-        vscode.commands.registerCommand("listen.removeRadio", async (item) => {
-            radio.remove(item);
-            libraryProvider.refresh(library.init());
-        }),
-
-        vscode.commands.registerCommand("listen.addToQueue", async (item) => {
-            queue.add(item);
-            queueProvider.refresh(queue.init());
-        }),
-
-        vscode.commands.registerCommand("listen.removeFromQueue", async (item) => {
-            queue.remove(item);
-            queueProvider.refresh(queue.init());
-        }),
-
-        vscode.commands.registerCommand("listen.play", async (item) => {
-            queue.add(item);
-            player.play(item);
-        }),
+        vscode.commands.registerCommand("listen.removeRadio", radio.remove),
+        vscode.commands.registerCommand("listen.addToQueue", queue.add),
+        vscode.commands.registerCommand("listen.removeFromQueue", queue.remove),
+        vscode.commands.registerCommand("listen.play", queue.play)
     ];
 
     for (const disposable of disposables) {
         context.subscriptions.push(disposable);
     }
-
-    const provider = new PlayerProvider(context.extensionUri);
-
-    context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider("listenPlayer", provider)
-    );
 }
 
 export function deactivate() {}
