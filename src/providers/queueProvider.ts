@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { QueueTreeItem } from "../lib/treeItem";
+import { QueueTreeItem } from "../libs/treeItem";
 
 export default class QueueProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 
@@ -29,5 +29,5 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
         }
 
         return Promise.resolve([]);
-    }
+    };
 }

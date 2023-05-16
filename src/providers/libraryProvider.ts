@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { ContentTreeItem } from '../lib/treeItem';
+import { ContentTreeItem } from '../libs/treeItem';
 
 export default class LibraryProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 

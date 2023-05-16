@@ -1,17 +1,5 @@
 import * as vscode from "vscode";
 
-class AudioPlayer extends vscode.TreeItem {
-    constructor(
-        public readonly label: string,
-        public readonly webViewPath: string,
-        public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-        public readonly command?: vscode.Command
-    ) {
-        super(label, collapsibleState);
-        this.contextValue = 'player';
-    }
-}
-
 export class ContentTreeItem extends vscode.TreeItem {
 
     label?: string;
@@ -37,8 +25,8 @@ export class QueueTreeItem extends ContentTreeItem {
         this.description = description;
         this.url = url;
         this.command = {
-            command: 'listen.play',
-            title: 'Play',
+            command: "listen.play",
+            title: "Play",
             arguments: [this]
         };
     }
@@ -54,8 +42,8 @@ export class RadioItem extends ContentTreeItem {
         this.url = url;
         this.contextValue = "radio";
         this.command = {
-            command: 'listen.addToQueue',
-            title: 'Add to Queue',
+            command: "listen.addToQueue",
+            title: "Add to Queue",
             arguments: [this]
         };
     }
@@ -94,12 +82,13 @@ export class EpisodeItem extends ContentTreeItem {
 
     constructor(episode: Record<string, any>) {
         super(episode.title, [], vscode.TreeItemCollapsibleState.None);
-        this.label = episode.title;
+        this.label = episode.new ? episode.title : "";
+        this.description = episode.new ? "" : episode.title;
         this.contextValue = "episode";
         this.url = episode.url;
         this.command = {
-            command: 'listen.addToQueue',
-            title: 'Add to Queue',
+            command: "listen.addToQueue",
+            title: "Add to Queue",
             arguments: [this]
         };
     }

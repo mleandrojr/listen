@@ -8,8 +8,62 @@
         <link href="{styleUri}" rel="stylesheet">
     </head>
     <body>
-        <h1 id="listenAudioTitle"></h1>
-        <audio id="listenAudioPlayer" src="" controls autoplay muted></audio>
+        <div class="listen-player">
+            <div class="listen-player__container overflow">
+                <h1 id="listenAudioTitle" class="listen-player__label">&nbsp;</h1>
+            </div>
+            <div class="listen-player__container">
+                <input id="listenAudioRange" type="range" class="listen-player__range" min="0" max="65535" value="0" disabled>
+            </div>
+            <div class="listen-player__container">
+                <div id="listenAudioElapsedTime" class="listen-player__cell align-start">00:00</div>
+                <div id="listenAudioTimeLimit" class="listen-player__cell align-end">∞</div>
+            </div>
+
+            <div class="listen-player__container">
+                <div class="listen-player__cell">
+                    <a class="listen-player__link is-disabled">
+                        <svg class="listen-player__action">
+                            <use xlink:href="#listen-player__icon--rewind"></use>
+                        </svg>
+                    </a>
+                </div>
+                <div class="listen-player__cell">
+                    <a id="listenAudioPlayButton" class="listen-player__link listen-player__link--play is-big is-disabled">
+                        <svg class="listen-player__action">
+                            <use xlink:href="#listen-player__icon--play"></use>
+                        </svg>
+                    </a>
+                </div>
+                <div class="listen-player__cell">
+                    <a class="listen-player__link is-disabled">
+                        <svg class="listen-player__action">
+                            <use xlink:href="#listen-player__icon--forward"></use>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div class="listen-player__container">
+                <div class="listen-player__cell">
+                    <button id="listenAudioConfirmButton" class="listen-player__button" data-thanks="Thanks! (=)">Please click me so I can work.</button>
+                </div>
+            </div>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="is-hidden">
+            <symbol id="listen-player__icon--rewind" viewBox="0 0 1024 1024" fill="currentColor">
+                <path fill-rule="evenodd" d="M137.789 112.842c27.557 0 49.895 22.338 49.895 49.895v698.521c0 27.557-22.338 49.895-49.895 49.895h-49.895c-27.557 0-49.895-22.338-49.895-49.895v-698.521c0-27.557 22.338-49.895 49.895-49.895zM799.394 133.467c83.156-47.431 186.606 12.642 186.606 108.44v540.324c0 95.798-103.45 155.871-186.606 108.303l-472.87-270.162c-83.823-47.899-83.823-168.713 0-216.61l472.87-270.23z"></path>
+            </symbol>
+            <symbol id="listen-player__icon--play" viewBox="0 0 1024 1024" fill="currentColor">
+                <path fill-rule="evenodd" d="M0 512c0 282.782 229.218 512 512 512s512-229.218 512-512c0-282.782-229.218-512-512-512s-512 229.218-512 512zM736.439 460.38c18.235 10.293 30.346 29.542 30.346 51.62s-12.111 41.327-30.052 51.467l-0.294 0.153-294.229 163.472c-8.263 4.672-18.146 7.424-28.672 7.424-32.615 0-59.058-26.431-59.077-59.042v-326.946c0-45.003 48.364-73.518 87.749-51.62l294.229 163.472z"></path>
+            </symbol>
+            <symbol id="listen-player__icon--pause" viewBox="0 0 1024 1024" fill="currentColor">
+                <path fill-rule="evenodd" d="M0 512c0-282.782 229.218-512 512-512s512 229.218 512 512-229.218 512-512 512-512-229.218-512-512zM354.462 315.077c-21.751 0-39.385 17.633-39.385 39.385v0 315.077c0 21.74 17.644 39.385 39.385 39.385h39.385c21.751 0 39.385-17.633 39.385-39.385v0-315.077c0-21.751-17.633-39.385-39.385-39.385v0h-39.385zM630.154 315.077c-21.751 0-39.385 17.633-39.385 39.385v0 315.077c0 21.74 17.644 39.385 39.385 39.385h39.385c21.751 0 39.385-17.633 39.385-39.385v0-315.077c0-21.751-17.633-39.385-39.385-39.385v0h-39.385z"></path>
+            </symbol>
+            <symbol id="listen-player__icon--forward" viewBox="0 0 1024 1024" fill="currentColor">
+                <path fill-rule="evenodd" d="M886.211 112.842c-27.557 0-49.895 22.338-49.895 49.895v698.521c0 27.557 22.338 49.895 49.895 49.895h49.895c27.557 0 49.895-22.338 49.895-49.895v-698.521c0-27.557-22.338-49.895-49.895-49.895zM224.606 133.467c-83.156-47.431-186.606 12.642-186.606 108.44v540.324c0 95.798 103.45 155.871 186.606 108.303l472.87-270.162c83.823-47.899 83.823-168.713 0-216.61l-472.87-270.23z"></path>
+            </symbol>
+        </svg>
+        <audio id="listenAudioPlayer" src="" autoplay></audio>
         <script nonce="{nonce}" src="{scriptUri}"></script>
     </body>
 </html>

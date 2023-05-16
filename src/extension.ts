@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
-import Podcast from "./lib/podcast";
-import Radio from "./lib/radio";
-import Library from "./lib/library";
-import Queue from "./lib/queue";
+import Podcast from "./libs/podcast";
+import Radio from "./libs/radio";
+import Library from "./libs/library";
+import Queue from "./libs/queue";
 import LibraryProvider from "./providers/libraryProvider";
 import QueueProvider from "./providers/queueProvider";
 
@@ -14,13 +14,11 @@ export function activate(context: vscode.ExtensionContext) {
     const libraryProvider = new LibraryProvider(context);
     const queueProvider = new QueueProvider(context);
 
-
     const library = new Library(context, libraryProvider);
     const podcast = new Podcast(context, library);
     const radio = new Radio(context, library);
 
     const queue = new Queue(context, queueProvider);
-
 
     // (async () => {
     //     await context.globalState.update("radios", {});
@@ -40,7 +38,6 @@ export function activate(context: vscode.ExtensionContext) {
     const libraryTreeView = vscode.window.createTreeView("listenLibrary", {
         treeDataProvider: libraryProvider
     });
-    // libraryTreeView.onDidChangeSelection( e => click(e.selection));
 
     const queueTreeView = vscode.window.createTreeView("listenQueue", {
         treeDataProvider: queueProvider
@@ -55,7 +52,8 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand("listen.removeRadio", radio.remove),
         vscode.commands.registerCommand("listen.addToQueue", queue.add),
         vscode.commands.registerCommand("listen.removeFromQueue", queue.remove),
-        vscode.commands.registerCommand("listen.play", queue.play)
+        vscode.commands.registerCommand("listen.play", queue.play),
+        vscode.commands.registerCommand("listen.next", queue.next)
     ];
 
     for (const disposable of disposables) {

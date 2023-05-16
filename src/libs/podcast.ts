@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import fetch from "node-fetch";
 import Library from "./library";
+import LocalStorageService from "../services/localStorageService";
 import { XMLParser } from "fast-xml-parser";
 import { PodcastType } from "../types/podcast";
 import { EpisodeType } from "../types/episode";
@@ -8,15 +9,17 @@ import { PodcastItem } from "./treeItem";
 
 export default class Podcast {
 
-    context: vscode.ExtensionContext;
-    library: Library;
+    private localStorageService: LocalStorageService;
+    private context: vscode.ExtensionContext;
+    private library: Library;
 
     constructor(context: vscode.ExtensionContext, library: Library) {
+        this.localStorageService = new LocalStorageService(context.globalState);
         this.context = context;
         this.library = library;
     }
 
-    openDialog = async () => {
+    public openDialog = async () => {
 
         const feed = await vscode.window.showInputBox({
             placeHolder: "Enter the URL of the podcast feed",
@@ -36,13 +39,13 @@ export default class Podcast {
         }
     };
 
-    add = async (feed: string) => {
+    public add = async (feed: string) => {
 
-        let podcasts: Record<string, PodcastType>|undefined = {};
+        let podcasts: Record<string, PodcastType> = {};
 
         try {
 
-            podcasts = this.context.globalState.get("podcasts") || {};
+            podcasts = this.localStorageService.get("podcasts") || {};
 
             if (podcasts && podcasts.hasOwnProperty(feed)) {
                 vscode.window.showErrorMessage(`The podcast ${feed} is already in the library.`);
@@ -64,7 +67,7 @@ export default class Podcast {
                 episodes: <Record<string, EpisodeType>> {}
             };
 
-            await this.context.globalState.update("podcasts", podcasts);
+            this.localStorageService.set("podcasts", podcasts);
             this.addEpisodes(feed, content);
 
             vscode.window.showInformationMessage(`The podcast ${content.rss.channel.title} was successfully added.`);
@@ -76,23 +79,23 @@ export default class Podcast {
         this.library.refresh();
     };
 
-    refreshAll = async () => {
+    public refreshAll = async () => {
         this.library.refresh();
     };
 
-    refresh = async (podcastItem: PodcastItem): Promise<void> => {
+    public refresh = async (podcastItem: PodcastItem): Promise<void> => {
         vscode.window.showInformationMessage(`Updating ${podcastItem.label}`);
         const content = await this.getFeed(podcastItem.feed);
         this.addEpisodes(podcastItem.feed, content);
         this.library.refresh();
     };
 
-    remove = async (podcastItem: PodcastItem): Promise<void> => {
+    public remove = async (podcastItem: PodcastItem): Promise<void> => {
 
-        const podcasts = <Record<string, PodcastItem>> this.context.globalState.get("podcasts") || {};
+        const podcasts = <Record<string, PodcastItem>> this.localStorageService.get("podcasts") || {};
         delete podcasts[podcastItem.feed];
 
-        await this.context.globalState.update("podcasts", podcasts);
+        this.localStorageService.set("podcasts", podcasts);
 
         vscode.window.showInformationMessage(`The podcast ${podcastItem.label} was successfully removed.`);
         this.library.refresh();
@@ -154,7 +157,7 @@ export default class Podcast {
             return;
         }
 
-        const storedData: Record<string, PodcastType>|undefined = this.context.globalState.get("podcasts");
+        const storedData: Record<string, PodcastType> = this.localStorageService.get("podcasts");
         if (!storedData || !storedData.hasOwnProperty(feed)) {
             return;
         }
@@ -184,6 +187,6 @@ export default class Podcast {
 
         const parsedEpisodes: Record<string, EpisodeType> = {...newEpisodes, ...episodes};
         storedData[feed].episodes = parsedEpisodes;
-        this.context.globalState.update("podcasts", storedData);
+        this.localStorageService.set("podcasts", storedData);
     };
 }

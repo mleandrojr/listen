@@ -30,6 +30,7 @@
       {
         "command": "listen.refreshPodcast",
         "title": "Update Podcast",
+        "category": "listen.podcast",
         "icon": {
           "light": "resources/light/refresh.svg",
           "dark": "resources/dark/refresh.svg"
@@ -38,22 +39,16 @@
       {
         "command": "listen.removePodcast",
         "title": "Remove Podcast",
+        "category": "listen.podcast",
         "icon": {
           "light": "resources/light/remove.svg",
           "dark": "resources/dark/remove.svg"
         }
       },
       {
-        "command": "listen.refreshPodcasts",
-        "title": "Update All Podcasts",
-        "icon": {
-          "light": "resources/light/refresh.svg",
-          "dark": "resources/dark/refresh.svg"
-        }
-      },
-      {
         "command": "listen.removeRadio",
         "title": "Remove Radio",
+        "category": "listen.radio",
         "icon": {
           "light": "resources/light/remove.svg",
           "dark": "resources/dark/remove.svg"
@@ -61,15 +56,23 @@
       },
       {
         "command": "listen.addToQueue",
-        "title": "Add to Queue"
+        "title": "Add to Queue",
+        "category": "listen.queue"
       },
       {
         "command": "listen.removeFromQueue",
-        "title": "Remove from Queue"
+        "title": "Remove from Queue",
+        "category": "listen.queue"
       },
       {
         "command": "listen.play",
-        "title": "Play"
+        "title": "Play",
+        "category": "listen.queue"
+      },
+      {
+        "command": "listen.next",
+        "title": "Play",
+        "category": "listen.queue"
       }
     ],
     "viewsContainers": {
@@ -112,16 +115,20 @@
           "when": "view == listenLibrary && viewItem == Podcasts"
         },
         {
-          "command": "listen.addToQueue",
-          "when": "view == listenLibrary && (viewItem == episode || viewItem == radio)"
-        },
-        {
           "command": "listen.refreshPodcast",
           "when": "view == listenLibrary && viewItem == podcast"
         },
         {
+          "command": "listen.addToQueue",
+          "when": "view == listenLibrary && (viewItem == episode || viewItem == radio)"
+        },
+        {
           "command": "listen.removePodcast",
           "when": "view == listenLibrary && viewItem == podcast"
+        },
+        {
+          "command": "listen.addRadioStream",
+          "when": "view == listenLibrary && viewItem == 'Radio Streams'"
         },
         {
           "command": "listen.removeRadio",
