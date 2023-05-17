@@ -58,7 +58,6 @@ export default class Queue {
             }
         }
 
-        console.log(idx);
         if (!idx || !queue[idx]) {
             return;
         }
@@ -69,7 +68,6 @@ export default class Queue {
             description: queue[idx].description
         };
 
-        console.log(media);
         this.listen.player.play(media);
     };
 

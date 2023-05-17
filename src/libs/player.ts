@@ -18,7 +18,6 @@ export default class Player {
             return;
         }
 
-        console.log(media);
         this.currentMedia = media;
         this.listen.playerProvider.onDidReceiveMessage(this.onDidReceiveMessage);
         this.listen.playerProvider.postMessage({ command: "changeMedia", media: media });

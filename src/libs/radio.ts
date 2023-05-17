@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import Listen from '../listen';
-import Library from './library';
 import LocalStorageService from '../services/localStorageService';
 import { RadioType } from '../types/radio';
 import { RadioItem } from './treeItem';
@@ -59,7 +58,7 @@ export default class Radio {
         this.localStorageService.set("radios", radios);
 
         vscode.window.showInformationMessage(`The radio stream ${name || url} was successfully added.`);
-        this.listen.library.refresh();
+        this.listen.libraryProvider.refresh();
     };
 
     remove = async (radio: RadioItem) => {
@@ -71,6 +70,6 @@ export default class Radio {
         this.localStorageService.set("radios", radios);
 
         vscode.window.showInformationMessage(`The radio stream ${label} was successfully removed.`);
-        this.listen.library.refresh();
+        this.listen.libraryProvider.refresh();
     };
 }

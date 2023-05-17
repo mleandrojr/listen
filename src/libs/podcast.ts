@@ -73,18 +73,18 @@ export default class Podcast {
             vscode.window.showErrorMessage(`Invalid URL ${feed}`);
         }
 
-        this.listen.library.refresh();
+        this.listen.libraryProvider.refresh();
     };
 
     public refreshAll = async () => {
-        this.listen.library.refresh();
+        this.listen.libraryProvider.refresh();
     };
 
     public refresh = async (podcastItem: PodcastType): Promise<void> => {
         vscode.window.showInformationMessage(`Updating ${podcastItem.label}`);
         const content = await this.getFeed(podcastItem.feed);
         this.addEpisodes(podcastItem.feed, content);
-        this.listen.library.refresh();
+        this.listen.libraryProvider.refresh();
     };
 
     public remove = async (podcastItem: PodcastType): Promise<void> => {
@@ -95,7 +95,7 @@ export default class Podcast {
         this.localStorageService.set("podcasts", podcasts);
 
         vscode.window.showInformationMessage(`The podcast ${podcastItem.label} was successfully removed.`);
-        this.listen.library.refresh();
+        this.listen.libraryProvider.refresh();
     };
 
     public markAsRead = (podcastItem: PodcastType) => {
@@ -112,7 +112,7 @@ export default class Podcast {
         }
 
         this.localStorageService.set("podcasts", storedData);
-        this.listen.library.refresh();
+        this.listen.libraryProvider.refresh();
     };
 
     private getFeed = async (feed: string): Promise<Record<string, any>|null> => {

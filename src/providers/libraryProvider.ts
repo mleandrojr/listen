@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import Listen from '../listen';
-import { ContentTreeItem, PodcastItem } from '../libs/treeItem';
+import LocalStorageService from '../services/localStorageService';
+import { ContentTreeItem, PodcastItem, RadioItem } from '../libs/treeItem';
 import { PodcastType } from '../types/podcast';
 
 export default class LibraryProvider implements vscode.TreeDataProvider<ContentTreeItem> {
@@ -9,15 +10,23 @@ export default class LibraryProvider implements vscode.TreeDataProvider<ContentT
     private _onDidChangeTreeData: vscode.EventEmitter<ContentTreeItem | undefined | null | void>;
     private listen: Listen;
     private data: ContentTreeItem[] = [];
+    private localStorageService: LocalStorageService;
 
     public constructor(listen: Listen) {
         this.listen = listen;
+        this.localStorageService = new LocalStorageService(this.listen.context.globalState);
         this._onDidChangeTreeData = new vscode.EventEmitter<ContentTreeItem | undefined | null | void>();
         this.onDidChangeTreeData = this._onDidChangeTreeData.event;
+        this.refresh();
     }
 
-    public refresh(data: ContentTreeItem[]): void {
-        this.data = data;
+    public refresh(): void {
+
+        this.data = [
+            new ContentTreeItem("Podcasts", this.getPodcasts(), vscode.TreeItemCollapsibleState.Expanded),
+            new ContentTreeItem("Radio Streams", this.getRadios(), vscode.TreeItemCollapsibleState.Expanded)
+        ];
+
         this._onDidChangeTreeData.fire();
     }
 
@@ -53,5 +62,29 @@ export default class LibraryProvider implements vscode.TreeDataProvider<ContentT
         };
 
         this.listen.podcast.remove(data);
+    };
+
+    private getPodcasts = (): PodcastItem[] => {
+
+        const data = [];
+        const podcasts: Record<string, any> = this.localStorageService.get("podcasts");
+
+        for (const podcast in podcasts) {
+            data.push(new PodcastItem(podcasts[podcast]));
+        }
+
+        return data;
+    };
+
+    private getRadios = (): RadioItem[] => {
+
+        const data = [];
+        const radios: Record<string, any> = this.localStorageService.get("radios");
+
+        for (const radio in radios) {
+            data.push(new RadioItem(radios[radio].title, radios[radio].url));
+        }
+
+        return data;
     };
 }

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import Listen from "../listen";
-import { QueueTreeItem } from "../libs/treeItem";
+import { ContentTreeItem, QueueTreeItem } from "../libs/treeItem";
 import { QueueType } from "../types/queue";
 
 export default class QueueProvider implements vscode.TreeDataProvider<vscode.TreeItem> {

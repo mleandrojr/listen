@@ -27,7 +27,7 @@ export default class Podcast {
         }
 
         this.localStorageService.set("podcasts", storedData);
-        this.listen.library.refresh();
+        this.listen.libraryProvider.refresh();
     }
 
     public findByUrl(url: string): EpisodeType|null {
