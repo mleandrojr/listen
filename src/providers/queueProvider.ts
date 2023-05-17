@@ -12,6 +12,7 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
     private data: QueueTreeItem[] = [];
     private isDoubleClick: boolean = false;
     private localStorageService: LocalStorageService;
+    private currentItem?: QueueTreeItem;
 
     constructor(listen: Listen) {
         this.listen = listen;
@@ -27,7 +28,11 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
         const data = [];
 
         for (const item of items) {
-            data.push(new QueueTreeItem(item.url, item.label, item.description));
+
+            const label = item.url === this.listen.player.currentMedia?.url ? item.description : item.label;
+            const description = item.url === this.listen.player.currentMedia?.url ? item.label : item.description;
+
+            data.push(new QueueTreeItem(item.url, label, description));
         }
 
         this.data = data;
@@ -89,11 +94,14 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
     };
 
     play = (item: QueueTreeItem) => {
-        this.listen.queue.play(<QueueType> {
+
+        const media: QueueType = {
             label: item.description,
-            url: item.url,
+            url: item.url!,
             description: item.description
-        });
+        };
+
+        this.listen.queue.play(media);
     };
 
     remove = (treeItem: QueueTreeItem) => {

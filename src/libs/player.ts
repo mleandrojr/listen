@@ -1,12 +1,10 @@
-import * as vscode from "vscode";
 import Listen from "../listen";
-import LocalStorageService from "../services/localStorageService";
 import { QueueType } from "../types/queue";
 
 export default class Player {
 
+    public currentMedia?: QueueType;
     private listen: Listen;
-    private currentMedia?: QueueType;
 
     constructor(listen: Listen) {
         this.listen = listen;

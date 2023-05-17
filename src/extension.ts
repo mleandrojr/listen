@@ -21,18 +21,10 @@ export function activate(context: vscode.ExtensionContext) {
     //     libraryProvider.refresh(library.init());
     // })();
 
-    const libraryTreeView = vscode.window.createTreeView("listenLibrary", {
-        treeDataProvider: listen.libraryProvider
-    });
-
-    const queueTreeView = vscode.window.createTreeView("listenQueue", {
-        treeDataProvider: listen.queueProvider
-    });
-
     const disposables = [
         vscode.commands.registerCommand("listen.addPodcast", listen.podcast.openDialog),
-        vscode.commands.registerCommand("listen.refreshAllPodcasts", listen.libraryProvider.refreshAllPodcasts),
-        vscode.commands.registerCommand("listen.refreshPodcast", listen.libraryProvider.refreshPodcast),
+        vscode.commands.registerCommand("listen.refreshAllPodcasts", listen.libraryProvider.updateAllPodcasts),
+        vscode.commands.registerCommand("listen.refreshPodcast", listen.libraryProvider.updatePodcast),
         vscode.commands.registerCommand("listen.removePodcast", listen.libraryProvider.removePodcast),
         vscode.commands.registerCommand("listen.addRadioStream", listen.radio.openDialog),
         vscode.commands.registerCommand("listen.removeRadio", listen.radio.remove),

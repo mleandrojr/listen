@@ -47,10 +47,22 @@ export default class LibraryProvider implements vscode.TreeDataProvider<ContentT
         return Promise.resolve([]);
     }
 
-    public refreshAllPodcasts = () => {
+    public updateAllPodcasts = () => {
+        vscode.window.showInformationMessage("Updating all podcasts");
+        this.listen.podcast.updateAll();
     };
 
-    public refreshPodcast = (podcast: PodcastItem) => {
+    public updatePodcast = (podcast: PodcastItem) => {
+
+        vscode.window.showInformationMessage(`Updating ${podcast.label}`);
+
+        const data: PodcastType = {
+            label: podcast.label!,
+            feed: podcast.feed,
+            episodes: {}
+        };
+
+        this.listen.podcast.update(data);
     };
 
     public removePodcast = (podcast: PodcastItem) => {

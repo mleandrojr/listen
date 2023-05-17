@@ -78,14 +78,19 @@ export default class Podcast {
         this.listen.libraryProvider.refresh();
     };
 
-    public refreshAll = async () => {
+    public update = async (podcast: PodcastType) => {
+        const content = await this.getFeed(podcast.feed);
+        this.addEpisodes(podcast.feed, content);
         this.listen.libraryProvider.refresh();
     };
 
-    public refresh = async (podcastItem: PodcastType): Promise<void> => {
-        vscode.window.showInformationMessage(`Updating ${podcastItem.label}`);
-        const content = await this.getFeed(podcastItem.feed);
-        this.addEpisodes(podcastItem.feed, content);
+    public updateAll = async () => {
+
+        const podcasts = <Record<string, PodcastType>> this.localStorageService.get("podcasts") || {};
+        for (const podcast in podcasts) {
+            this.update(podcasts[podcast]);
+        }
+
         this.listen.libraryProvider.refresh();
     };
 
@@ -225,5 +230,5 @@ export default class Podcast {
         }
 
         return podcasts;
-    }
+    };
 }

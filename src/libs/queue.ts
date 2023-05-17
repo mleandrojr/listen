@@ -16,9 +16,9 @@ export default class Queue {
         this.localStorageService = new LocalStorageService(this.listen.context.globalState);
     }
 
-    play = async (item: QueueType) => {
+    play = async (item: QueueType, ignoreDoubleClick?: Boolean) => {
 
-        if (!this.isDoubleClick) {
+        if (!ignoreDoubleClick && !this.isDoubleClick) {
 
             this.isDoubleClick = true;
             setTimeout(() => {
@@ -30,6 +30,7 @@ export default class Queue {
 
         this.selectedItem = item;
         this.listen.player.play(item);
+        this.listen.queueProvider.refresh();
         return;
     };
 
@@ -55,7 +56,7 @@ export default class Queue {
             description: queue[idx].description
         };
 
-        this.listen.player.play(media);
+        this.play(media, true);
     };
 
     remove = async (item: QueueType) => {

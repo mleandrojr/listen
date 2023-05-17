@@ -21,15 +21,12 @@ export default class Listen {
     public radio: Radio;
     public queue: Queue;
     public player: Player;
+    public libraryTreeView: vscode.TreeView<unknown>;
+    public queueTreeView: vscode.TreeView<unknown>;
 
     public constructor(context: vscode.ExtensionContext) {
 
         this.context = context;
-
-        /* Data providers. */
-        this.libraryProvider = new LibraryProvider(this);
-        this.queueProvider = new QueueProvider(this);
-        this.playerProvider = new PlayerProvider(this);
 
         this.library = new Library(this);
         this.podcast = new Podcast(this);
@@ -38,6 +35,10 @@ export default class Listen {
         this.queue = new Queue(this);
         this.player = new Player(this);
 
+        this.libraryProvider = new LibraryProvider(this);
+        this.queueProvider = new QueueProvider(this);
+        this.playerProvider = new PlayerProvider(this);
+
         this.context.subscriptions.push(
             vscode.window.registerWebviewViewProvider("listenPlayer", this.playerProvider, {
                 webviewOptions: {
@@ -45,5 +46,13 @@ export default class Listen {
                 }
             })
         );
+
+        this.libraryTreeView = vscode.window.createTreeView("listenLibrary", {
+            treeDataProvider: this.libraryProvider
+        });
+
+        this.queueTreeView = vscode.window.createTreeView("listenQueue", {
+            treeDataProvider: this.queueProvider
+        });
     }
 }
