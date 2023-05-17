@@ -59,7 +59,9 @@ export default class Podcast {
             return;
         }
 
-        const thumbnail = await this.getThumbnail(content.rss.channel.image.url);
+        const thumbnailUrl = this.getThumbnailUrl(content);
+        const thumbnail = await this.getThumbnail(thumbnailUrl);
+
         podcasts[feed] = <PodcastType> {
             label: content.rss.channel.title,
             description: content.rss.channel.description,
@@ -159,8 +161,18 @@ export default class Podcast {
         return content;
     };
 
+    private getThumbnailUrl = (content: Record<string, any>): string => {
+
+        if (Array.isArray(content.rss.channel.image)) {
+            return content.rss.channel.image[0].url;
+        }
+
+        return content.rss.channel.image.url;
+    };
+
     private async getThumbnail(url: string): Promise<any> {
 
+        console.log(url);
         const response: Record<any, any> = await fetch(url);
         const contentType = response.headers.get("content-type");
         const content: string = Buffer.from(await response.arrayBuffer()).toString("base64");
