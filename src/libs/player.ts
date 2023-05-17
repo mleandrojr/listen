@@ -1,20 +1,19 @@
 import * as vscode from "vscode";
-import PlayerProvider from "../providers/playerProviders";
-import Queue from "./queue";
+import Listen from "../listen";
+import LocalStorageService from "../services/localStorageService";
 import { QueueType } from "../types/queue";
 import { QueueTreeItem } from "./treeItem";
+import { PodcastType } from "../types/podcast";
 
 export default class Player {
 
-    private queue: Queue;
-    private context: vscode.ExtensionContext;
-    private provider: PlayerProvider;
+    private listen: Listen;
     private currentMedia?: QueueType;
+    private localStorageService: LocalStorageService;
 
-    constructor(queue: Queue, context: vscode.ExtensionContext, provider: PlayerProvider) {
-        this.queue = queue;
-        this.context = context;
-        this.provider = provider;
+    constructor(listen: Listen) {
+        this.listen = listen;
+        this.localStorageService = new LocalStorageService(this.listen.context.globalState);
     }
 
     public play = async (item: QueueTreeItem) => {
@@ -30,20 +29,33 @@ export default class Player {
         }
 
         this.currentMedia = media;
-        this.provider.postMessage({ command: "changeMedia", media: media });
-        this.provider.onDidReceiveMessage(this.onDidReceiveMessage);
+        this.listen.playerProvider.onDidReceiveMessage(this.onDidReceiveMessage);
+        this.listen.playerProvider.postMessage({ command: "changeMedia", media: media });
     };
 
     public next = () => {
-        this.queue.next();
+
     };
 
     public onDidReceiveMessage = (e: any) => {
-
-        switch (e.command) {
-            case "next":
-                this.next();
-                break;
+        if (this.commands.hasOwnProperty(e.command)) {
+            this.commands[e.command](e);
         }
+    };
+
+    public commands: Record<string, Function> = {
+
+        playing: (e: any) => {
+            if (!e.media) {
+                return;
+            }
+
+            const storedData: Record<string, PodcastType> = this.localStorageService.get("podcasts");
+            console.log(storedData);
+        },
+
+        next: () => {
+            this.listen.queue.next();
+        },
     };
 }

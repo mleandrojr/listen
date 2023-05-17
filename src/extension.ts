@@ -1,24 +1,10 @@
 import * as vscode from "vscode";
-import Podcast from "./libs/podcast";
-import Radio from "./libs/radio";
-import Library from "./libs/library";
-import Queue from "./libs/queue";
-import LibraryProvider from "./providers/libraryProvider";
-import QueueProvider from "./providers/queueProvider";
+import Listen from "./listen";
 
 export function activate(context: vscode.ExtensionContext) {
 
     context.globalState.setKeysForSync(["podcasts", "radios"]);
-
-    /* Data providers. */
-    const libraryProvider = new LibraryProvider(context);
-    const queueProvider = new QueueProvider(context);
-
-    const library = new Library(context, libraryProvider);
-    const podcast = new Podcast(context, library);
-    const radio = new Radio(context, library);
-
-    const queue = new Queue(context, queueProvider);
+    const listen = new Listen(context);
 
     // (async () => {
     //     await context.globalState.update("radios", {});
@@ -36,24 +22,24 @@ export function activate(context: vscode.ExtensionContext) {
     // })();
 
     const libraryTreeView = vscode.window.createTreeView("listenLibrary", {
-        treeDataProvider: libraryProvider
+        treeDataProvider: listen.libraryProvider
     });
 
     const queueTreeView = vscode.window.createTreeView("listenQueue", {
-        treeDataProvider: queueProvider
+        treeDataProvider: listen.queueProvider
     });
 
     const disposables = [
-        vscode.commands.registerCommand("listen.addPodcast", podcast.openDialog),
-        vscode.commands.registerCommand("listen.refreshAllPodcasts", podcast.refreshAll),
-        vscode.commands.registerCommand("listen.refreshPodcast", podcast.refresh),
-        vscode.commands.registerCommand("listen.removePodcast", podcast.remove),
-        vscode.commands.registerCommand("listen.addRadioStream", radio.openDialog),
-        vscode.commands.registerCommand("listen.removeRadio", radio.remove),
-        vscode.commands.registerCommand("listen.addToQueue", queue.add),
-        vscode.commands.registerCommand("listen.removeFromQueue", queue.remove),
-        vscode.commands.registerCommand("listen.play", queue.play),
-        vscode.commands.registerCommand("listen.next", queue.next)
+        vscode.commands.registerCommand("listen.addPodcast", listen.podcast.openDialog),
+        vscode.commands.registerCommand("listen.refreshAllPodcasts", listen.podcast.refreshAll),
+        vscode.commands.registerCommand("listen.refreshPodcast", listen.podcast.refresh),
+        vscode.commands.registerCommand("listen.removePodcast", listen.podcast.remove),
+        vscode.commands.registerCommand("listen.addRadioStream", listen.radio.openDialog),
+        vscode.commands.registerCommand("listen.removeRadio", listen.radio.remove),
+        vscode.commands.registerCommand("listen.addToQueue", listen.queue.add),
+        vscode.commands.registerCommand("listen.removeFromQueue", listen.queue.remove),
+        vscode.commands.registerCommand("listen.play", listen.queue.play),
+        vscode.commands.registerCommand("listen.next", listen.queue.next)
     ];
 
     for (const disposable of disposables) {

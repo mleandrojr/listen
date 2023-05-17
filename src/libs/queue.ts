@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import QueueProvider from "../providers/queueProvider";
+import Listen from "../listen";
 import PlayerProvider from "../providers/playerProviders";
 import Player from "./player";
 import LocalStorageService from "../services/localStorageService";
@@ -8,29 +8,14 @@ import { QueueType } from "../types/queue";
 
 export default class Queue {
 
+    private listen: Listen;
     private localStorageService: LocalStorageService;
-    private context: vscode.ExtensionContext;
-    private provider: QueueProvider;
-    private player: Player;
     private selectedItem?: ContentTreeItem;
     private isDoubleClick: boolean = false;
 
-    constructor(context: vscode.ExtensionContext, provider: QueueProvider) {
-        this.localStorageService = new LocalStorageService(context.globalState);
-        this.context = context;
-        this.provider = provider;
-
-        const playerProvider = new PlayerProvider(context);
-        this.player = new Player(this, context, playerProvider);
-
-        context.subscriptions.push(
-            vscode.window.registerWebviewViewProvider("listenPlayer", playerProvider, {
-                webviewOptions: {
-                    retainContextWhenHidden: true
-                }
-            })
-        );
-
+    constructor(listen: Listen) {
+        this.listen = listen;
+        this.localStorageService = new LocalStorageService(this.listen.context.globalState);
         this.refresh();
     }
 
@@ -43,7 +28,7 @@ export default class Queue {
             data.push(new QueueTreeItem(item.url, item.label, item.description));
         }
 
-        this.provider.refresh(data);
+        this.listen.queueProvider.refresh(data);
     };
 
     play = async (item: QueueTreeItem) => {
@@ -59,7 +44,7 @@ export default class Queue {
         }
 
         this.selectedItem = item;
-        this.player.play(item);
+        this.listen.player.play(item);
         return;
     };
 
@@ -80,7 +65,7 @@ export default class Queue {
         }
 
         const queueItem = new QueueTreeItem(queue[idx].url, queue[idx].label, queue[idx].description);
-        this.player.play(queueItem);
+        this.listen.player.play(queueItem);
     };
 
     add = async (content: ContentTreeItem) => {
@@ -116,7 +101,7 @@ export default class Queue {
         this.localStorageService.set("queue", queue);
 
         if (queue.length === 1) {
-            this.player.play(
+            this.listen.player.play(
                 new QueueTreeItem(treeviewItem.url || "", treeviewItem.label || "", treeviewItem.description)
             );
         }

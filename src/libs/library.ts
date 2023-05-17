@@ -1,24 +1,22 @@
 import * as vscode from "vscode";
-import LibraryProvider from "../providers/libraryProvider";
+import Listen from "../listen";
 import LocalStorageService from "../services/localStorageService";
 import { PodcastItem, RadioItem, ContentTreeItem } from "./treeItem";
 
 export default class Library {
 
+    private listen: Listen;
     private localStorageService: LocalStorageService;
-    private context: vscode.ExtensionContext;
-    private provider: LibraryProvider;
     private selectedItem?: ContentTreeItem;
 
-    constructor(context: vscode.ExtensionContext, provider: LibraryProvider) {
-        this.localStorageService = new LocalStorageService(context.globalState);
-        this.context = context;
-        this.provider = provider;
+    constructor(listen: Listen) {
+        this.listen = listen;
+        this.localStorageService = new LocalStorageService(this.listen.context.globalState);
         this.refresh();
     }
 
     public refresh = () => {
-        this.provider.refresh([
+        this.listen.libraryProvider.refresh([
             new ContentTreeItem("Podcasts", this.getPodcasts(), vscode.TreeItemCollapsibleState.Expanded),
             new ContentTreeItem("Radio Streams", this.getRadios(), vscode.TreeItemCollapsibleState.Expanded)
         ]);

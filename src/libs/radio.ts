@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import Listen from '../listen';
 import Library from './library';
 import LocalStorageService from '../services/localStorageService';
 import { RadioType } from '../types/radio';
@@ -6,14 +7,12 @@ import { RadioItem } from './treeItem';
 
 export default class Radio {
 
+    private listen: Listen;
     private localStorageService: LocalStorageService;
-    private context: vscode.ExtensionContext;
-    private library: Library;
 
-    constructor(context: vscode.ExtensionContext, library: Library) {
-        this.localStorageService = new LocalStorageService(context.globalState);
-        this.context = context;
-        this.library = library;
+    constructor(listen: Listen) {
+        this.listen = listen;
+        this.localStorageService = new LocalStorageService(this.listen.context.globalState);
     }
 
     openDialog = async () => {
@@ -60,7 +59,7 @@ export default class Radio {
         this.localStorageService.set("radios", radios);
 
         vscode.window.showInformationMessage(`The radio stream ${name || url} was successfully added.`);
-        this.library.refresh();
+        this.listen.library.refresh();
     };
 
     remove = async (radio: RadioItem) => {
@@ -72,6 +71,6 @@ export default class Radio {
         this.localStorageService.set("radios", radios);
 
         vscode.window.showInformationMessage(`The radio stream ${label} was successfully removed.`);
-        this.library.refresh();
+        this.listen.library.refresh();
     };
 }

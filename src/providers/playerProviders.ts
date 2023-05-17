@@ -1,16 +1,16 @@
 import path from "path";
 import * as fs from "fs";
 import * as vscode from "vscode";
+import Listen from "../listen";
 import { QueueTreeItem } from "../libs/treeItem";
-import { QueueType } from "../types/queue";
 
 export default class PlayerProvider implements vscode.WebviewViewProvider {
 
-    private context: vscode.ExtensionContext;
+    private listen: Listen;
     private view?: vscode.WebviewView;
 
-    constructor(context: vscode.ExtensionContext) {
-        this.context = context;
+    constructor(listen: Listen) {
+        this.listen = listen;
     }
 
     public postMessage(message: any) {
@@ -27,7 +27,7 @@ export default class PlayerProvider implements vscode.WebviewViewProvider {
         this.view.webview.options = {
             enableScripts: true,
             localResourceRoots: [
-                this.context.extensionUri
+                this.listen.context.extensionUri
             ]
         };
 
@@ -36,15 +36,15 @@ export default class PlayerProvider implements vscode.WebviewViewProvider {
 
     private getWebviewContent(media?: QueueTreeItem) {
 
-        const cssPath = vscode.Uri.joinPath(this.context.extensionUri, "html", "assets", "css", "listen.css");
+        const cssPath = vscode.Uri.joinPath(this.listen.context.extensionUri, "html", "assets", "css", "listen.css");
         const styleUri = this.view!.webview.asWebviewUri(cssPath);
 
-        const scriptPath = vscode.Uri.joinPath(this.context.extensionUri, "html", "assets", "js", "listen.js");
+        const scriptPath = vscode.Uri.joinPath(this.listen.context.extensionUri, "html", "assets", "js", "listen.js");
         const scriptUri = this.view!.webview.asWebviewUri(scriptPath);
 
         const nonce = this.getNonce();
         const filePath = vscode.Uri.file(
-            path.join(this.context.extensionPath, "html", "audioPlayer.html")
+            path.join(this.listen.context.extensionPath, "html", "audioPlayer.html")
         );
 
         const content = fs.readFileSync(filePath.fsPath, "utf-8")

@@ -88,6 +88,7 @@ class ListenPlayer {
 
             const playButton = this.playButton.querySelector("svg use");
             playButton.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#listen-player__icon--pause");
+            this.vscode.postMessage({ command: "playing", media: this.player.src });
 
         } catch (err) {
             console.error(err);

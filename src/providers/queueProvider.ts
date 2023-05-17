@@ -1,15 +1,14 @@
 import * as vscode from "vscode";
+import Listen from "../listen";
 import { QueueTreeItem } from "../libs/treeItem";
 
 export default class QueueProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 
     public onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined | null | void>;
     private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined | null | void>;
-    private context: vscode.ExtensionContext;
     private data: QueueTreeItem[] = [];
 
-    constructor(context: vscode.ExtensionContext) {
-        this.context = context;
+    constructor(listen: Listen) {
         this._onDidChangeTreeData = new vscode.EventEmitter<vscode.TreeItem | undefined | null | void>();
         this.onDidChangeTreeData = this._onDidChangeTreeData.event;
     }

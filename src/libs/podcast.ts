@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import Listen from "../listen";
 import fetch from "node-fetch";
 import Library from "./library";
 import LocalStorageService from "../services/localStorageService";
@@ -9,14 +10,12 @@ import { PodcastItem } from "./treeItem";
 
 export default class Podcast {
 
+    private listen: Listen;
     private localStorageService: LocalStorageService;
-    private context: vscode.ExtensionContext;
-    private library: Library;
 
-    constructor(context: vscode.ExtensionContext, library: Library) {
-        this.localStorageService = new LocalStorageService(context.globalState);
-        this.context = context;
-        this.library = library;
+    constructor(listen: Listen) {
+        this.listen = listen;
+        this.localStorageService = new LocalStorageService(this.listen.context.globalState);
     }
 
     public openDialog = async () => {
@@ -76,18 +75,18 @@ export default class Podcast {
             vscode.window.showErrorMessage(`Invalid URL ${feed}`);
         }
 
-        this.library.refresh();
+        this.listen.library.refresh();
     };
 
     public refreshAll = async () => {
-        this.library.refresh();
+        this.listen.library.refresh();
     };
 
     public refresh = async (podcastItem: PodcastItem): Promise<void> => {
         vscode.window.showInformationMessage(`Updating ${podcastItem.label}`);
         const content = await this.getFeed(podcastItem.feed);
         this.addEpisodes(podcastItem.feed, content);
-        this.library.refresh();
+        this.listen.library.refresh();
     };
 
     public remove = async (podcastItem: PodcastItem): Promise<void> => {
@@ -98,7 +97,7 @@ export default class Podcast {
         this.localStorageService.set("podcasts", podcasts);
 
         vscode.window.showInformationMessage(`The podcast ${podcastItem.label} was successfully removed.`);
-        this.library.refresh();
+        this.listen.library.refresh();
     };
 
     private getFeed = async (feed: string): Promise<Record<string, any>|null> => {
