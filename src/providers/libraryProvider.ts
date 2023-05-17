@@ -1,15 +1,18 @@
 import * as vscode from 'vscode';
 import Listen from '../listen';
-import { ContentTreeItem } from '../libs/treeItem';
+import { ContentTreeItem, PodcastItem } from '../libs/treeItem';
+import { PodcastType } from '../types/podcast';
 
-export default class LibraryProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
+export default class LibraryProvider implements vscode.TreeDataProvider<ContentTreeItem> {
 
-    public onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined | null | void>;
-    private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined | null | void>;
+    public onDidChangeTreeData: vscode.Event<ContentTreeItem | undefined | null | void>;
+    private _onDidChangeTreeData: vscode.EventEmitter<ContentTreeItem | undefined | null | void>;
+    private listen: Listen;
     private data: ContentTreeItem[] = [];
 
     public constructor(listen: Listen) {
-        this._onDidChangeTreeData = new vscode.EventEmitter<vscode.TreeItem | undefined | null | void>();
+        this.listen = listen;
+        this._onDidChangeTreeData = new vscode.EventEmitter<ContentTreeItem | undefined | null | void>();
         this.onDidChangeTreeData = this._onDidChangeTreeData.event;
     }
 
@@ -34,4 +37,21 @@ export default class LibraryProvider implements vscode.TreeDataProvider<vscode.T
 
         return Promise.resolve([]);
     }
+
+    public refreshAllPodcasts = () => {
+    };
+
+    public refreshPodcast = (podcast: PodcastItem) => {
+    };
+
+    public removePodcast = (podcast: PodcastItem) => {
+
+        const data: PodcastType = {
+            label: podcast.label!,
+            feed: podcast.feed,
+            episodes: {}
+        };
+
+        this.listen.podcast.remove(data);
+    };
 }

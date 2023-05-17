@@ -7,9 +7,9 @@ export class ContentTreeItem extends vscode.TreeItem {
     contextValue?: string;
     url?: string;
     command?: vscode.Command;
-    children?: vscode.TreeItem[];
+    children?: ContentTreeItem[];
 
-    constructor(label: string, children?: vscode.TreeItem[], collapsibleSatate?: vscode.TreeItemCollapsibleState) {
+    constructor(label: string, children?: ContentTreeItem[], collapsibleSatate?: vscode.TreeItemCollapsibleState) {
         super(label, collapsibleSatate === undefined ? vscode.TreeItemCollapsibleState.None : collapsibleSatate);
         this.contextValue = label;
         this.children = children;
@@ -55,7 +55,7 @@ export class PodcastItem extends ContentTreeItem {
 
     constructor(podcast: Record<string, any>, children?: EpisodeItem[]) {
         super(podcast.label, children, vscode.TreeItemCollapsibleState.Collapsed);
-        this.label = podcast.title;
+        this.label = podcast.label;
         this.description = podcast.description;
         this.feed = podcast.feed;
         this.children = this.getEpisodes(podcast);

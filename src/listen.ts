@@ -1,6 +1,7 @@
 import Library from "./libs/library";
 import Player from "./libs/player";
 import Podcast from "./libs/podcast";
+import Episode from "./libs/episode";
 import Queue from "./libs/queue";
 import Radio from "./libs/radio";
 import LibraryProvider from "./providers/libraryProvider";
@@ -16,6 +17,7 @@ export default class Listen {
     public playerProvider: PlayerProvider;
     public library: Library;
     public podcast: Podcast;
+    public episode: Episode;
     public radio: Radio;
     public queue: Queue;
     public player: Player;
@@ -31,6 +33,7 @@ export default class Listen {
 
         this.library = new Library(this);
         this.podcast = new Podcast(this);
+        this.episode = new Episode(this);
         this.radio = new Radio(this);
         this.queue = new Queue(this);
         this.player = new Player(this);

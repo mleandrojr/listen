@@ -1,12 +1,10 @@
 import * as vscode from "vscode";
 import Listen from "../listen";
 import fetch from "node-fetch";
-import Library from "./library";
 import LocalStorageService from "../services/localStorageService";
 import { XMLParser } from "fast-xml-parser";
 import { PodcastType } from "../types/podcast";
 import { EpisodeType } from "../types/episode";
-import { PodcastItem } from "./treeItem";
 
 export default class Podcast {
 
@@ -58,7 +56,7 @@ export default class Podcast {
 
             const thumbnail = await this.getThumbnail(content.rss.channel.image.url);
             podcasts[feed] = <PodcastType> {
-                title: content.rss.channel.title,
+                label: content.rss.channel.title,
                 description: content.rss.channel.description,
                 link: content.rss.channel.link,
                 feed: feed,
@@ -82,21 +80,38 @@ export default class Podcast {
         this.listen.library.refresh();
     };
 
-    public refresh = async (podcastItem: PodcastItem): Promise<void> => {
+    public refresh = async (podcastItem: PodcastType): Promise<void> => {
         vscode.window.showInformationMessage(`Updating ${podcastItem.label}`);
         const content = await this.getFeed(podcastItem.feed);
         this.addEpisodes(podcastItem.feed, content);
         this.listen.library.refresh();
     };
 
-    public remove = async (podcastItem: PodcastItem): Promise<void> => {
+    public remove = async (podcastItem: PodcastType): Promise<void> => {
 
-        const podcasts = <Record<string, PodcastItem>> this.localStorageService.get("podcasts") || {};
+        const podcasts = <Record<string, PodcastType>> this.localStorageService.get("podcasts") || {};
         delete podcasts[podcastItem.feed];
 
         this.localStorageService.set("podcasts", podcasts);
 
         vscode.window.showInformationMessage(`The podcast ${podcastItem.label} was successfully removed.`);
+        this.listen.library.refresh();
+    };
+
+    public markAsRead = (podcastItem: PodcastType) => {
+
+        const storedData: Record<string, PodcastType> = this.localStorageService.get("podcasts");
+        const podcast = storedData[podcastItem.feed];
+
+        if (!podcast || !podcast.episodes.length) {
+            return;
+        }
+
+        for (const episode in podcast.episodes) {
+            this.listen.episode.markAsRead(podcast.episodes[episode]);
+        }
+
+        this.localStorageService.set("podcasts", storedData);
         this.listen.library.refresh();
     };
 

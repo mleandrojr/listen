@@ -31,15 +31,15 @@ export function activate(context: vscode.ExtensionContext) {
 
     const disposables = [
         vscode.commands.registerCommand("listen.addPodcast", listen.podcast.openDialog),
-        vscode.commands.registerCommand("listen.refreshAllPodcasts", listen.podcast.refreshAll),
-        vscode.commands.registerCommand("listen.refreshPodcast", listen.podcast.refresh),
-        vscode.commands.registerCommand("listen.removePodcast", listen.podcast.remove),
+        vscode.commands.registerCommand("listen.refreshAllPodcasts", listen.libraryProvider.refreshAllPodcasts),
+        vscode.commands.registerCommand("listen.refreshPodcast", listen.libraryProvider.refreshPodcast),
+        vscode.commands.registerCommand("listen.removePodcast", listen.libraryProvider.removePodcast),
         vscode.commands.registerCommand("listen.addRadioStream", listen.radio.openDialog),
         vscode.commands.registerCommand("listen.removeRadio", listen.radio.remove),
         vscode.commands.registerCommand("listen.addToQueue", listen.queue.add),
-        vscode.commands.registerCommand("listen.removeFromQueue", listen.queue.remove),
-        vscode.commands.registerCommand("listen.play", listen.queue.play),
-        vscode.commands.registerCommand("listen.next", listen.queue.next)
+        vscode.commands.registerCommand("listen.removeFromQueue", listen.queueProvider.remove),
+        vscode.commands.registerCommand("listen.play", listen.queueProvider.play),
+        vscode.commands.registerCommand("listen.next", listen.queueProvider.next)
     ];
 
     for (const disposable of disposables) {

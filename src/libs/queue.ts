@@ -1,7 +1,5 @@
 import * as vscode from "vscode";
 import Listen from "../listen";
-import PlayerProvider from "../providers/playerProviders";
-import Player from "./player";
 import LocalStorageService from "../services/localStorageService";
 import { ContentTreeItem, QueueTreeItem } from "./treeItem";
 import { QueueType } from "../types/queue";
@@ -31,7 +29,7 @@ export default class Queue {
         this.listen.queueProvider.refresh(data);
     };
 
-    play = async (item: QueueTreeItem) => {
+    play = async (item: QueueType) => {
 
         if (!this.isDoubleClick) {
 
@@ -60,12 +58,19 @@ export default class Queue {
             }
         }
 
+        console.log(idx);
         if (!idx || !queue[idx]) {
             return;
         }
 
-        const queueItem = new QueueTreeItem(queue[idx].url, queue[idx].label, queue[idx].description);
-        this.listen.player.play(queueItem);
+        const media: QueueType = {
+            url: queue[idx].url!,
+            label: queue[idx].label,
+            description: queue[idx].description
+        };
+
+        console.log(media);
+        this.listen.player.play(media);
     };
 
     add = async (content: ContentTreeItem) => {
@@ -101,17 +106,19 @@ export default class Queue {
         this.localStorageService.set("queue", queue);
 
         if (queue.length === 1) {
-            this.listen.player.play(
-                new QueueTreeItem(treeviewItem.url || "", treeviewItem.label || "", treeviewItem.description)
-            );
+            this.listen.player.play(<QueueType> {
+                url: treeviewItem.url,
+                label: treeviewItem.label,
+                description: treeviewItem.description
+            });
         }
 
         this.refresh();
     };
 
-    remove = async (item: QueueTreeItem) => {
+    remove = async (item: QueueType) => {
 
-        const items: QueueTreeItem[] = this.localStorageService.get("queue") || [];
+        const items: QueueType[] = this.localStorageService.get("queue") || [];
 
         let idx = null;
         for (let i = 0, length = items.length; i < length; i++) {

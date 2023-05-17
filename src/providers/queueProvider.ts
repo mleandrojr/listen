@@ -1,14 +1,17 @@
 import * as vscode from "vscode";
 import Listen from "../listen";
 import { QueueTreeItem } from "../libs/treeItem";
+import { QueueType } from "../types/queue";
 
 export default class QueueProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 
     public onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined | null | void>;
     private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined | null | void>;
+    private listen: Listen;
     private data: QueueTreeItem[] = [];
 
     constructor(listen: Listen) {
+        this.listen = listen;
         this._onDidChangeTreeData = new vscode.EventEmitter<vscode.TreeItem | undefined | null | void>();
         this.onDidChangeTreeData = this._onDidChangeTreeData.event;
     }
@@ -28,5 +31,28 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
         }
 
         return Promise.resolve([]);
+    };
+
+    play = (item: QueueTreeItem) => {
+        this.listen.queue.play(<QueueType> {
+            label: item.description,
+            url: item.url,
+            description: item.description
+        });
+    };
+
+    remove = (treeItem: QueueTreeItem) => {
+
+        const item: QueueType = {
+            label: treeItem.label,
+            url: treeItem.url!,
+            description: treeItem.description
+        };
+
+        this.listen.queue.remove(item);
+    };
+
+    next = () => {
+        this.listen.queue.next();
     };
 }

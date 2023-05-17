@@ -1,7 +1,7 @@
 import { EpisodeType } from './episode';
 
 export type PodcastType = {
-    title: string,
+    label: string,
     description?: string,
     link?: string,
     feed: string,
