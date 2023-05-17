@@ -46,16 +46,28 @@ export default class Player {
     public commands: Record<string, Function> = {
 
         playing: (e: any) => {
-            if (!e.media) {
-                return;
+            if (e.media) {
+                this.setItemAsRead(e.media);
             }
-
-            const storedData: Record<string, PodcastType> = this.localStorageService.get("podcasts");
-            console.log(storedData);
         },
 
         next: () => {
             this.listen.queue.next();
         },
     };
+
+    private setItemAsRead = (media: string) => {
+
+        const storedData: Record<string, PodcastType> = this.localStorageService.get("podcasts");
+        for (const podcast in storedData) {
+            for (const episode in storedData[podcast].episodes) {
+                if (storedData[podcast].episodes[episode].url === media) {
+                    storedData[podcast].episodes[episode].new = false;
+                }
+            }
+        }
+
+        this.localStorageService.set("podcasts", storedData);
+        this.listen.library.refresh();
+    }
 }
