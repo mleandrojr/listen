@@ -2,7 +2,6 @@ class ListenPlayer {
 
     label;
     player;
-    source;
     range;
     confirmButton;
     elapsedTime;
@@ -25,9 +24,12 @@ class ListenPlayer {
         this.player.addEventListener("loadedmetadata", this.playerEvents.loadedMetadata);
         this.player.addEventListener("timeupdate", this.playerEvents.timeUpdate);
         this.player.addEventListener("ended", this.playerEvents.ended);
+        this.player.addEventListener("error", (e) => {
+            console.log(e);
+            console.log('Error code: ' + this.player.error.code);
+            console.log('Error message: ' + this.player.error.message);
+        });
         this.player.volume = 1;
-
-        this.source = document.getElementById("listenAudioSource");
 
         this.confirmButton = document.getElementById("listenAudioConfirmButton");
         this.confirmButton.addEventListener("click", this.confirmInterfaceClick);
@@ -61,7 +63,7 @@ class ListenPlayer {
     changeMedia = async (message) => {
 
         this.range.setAttribute("disabled", "disabled");
-        this.source.src = message.media.url;
+        this.player.src = message.media.url;
         this.player.load();
 
         try {
@@ -76,7 +78,7 @@ class ListenPlayer {
 
     play = async () => {
 
-        if (!this.source.src.length) {
+        if (!this.player.src.length) {
             return;
         }
 
@@ -92,7 +94,7 @@ class ListenPlayer {
 
             const playButton = this.playButton.querySelector("svg use");
             playButton.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#listen-player__icon--pause");
-            this.vscode.postMessage({ command: "playing", media: this.source.src });
+            this.vscode.postMessage({ command: "playing", media: this.player.src });
 
         } catch (err) {
             console.error(err);
@@ -117,6 +119,10 @@ class ListenPlayer {
     };
 
     timeFormat(timestamp) {
+
+        if (isNaN(timestamp) || !isFinite(timestamp)) {
+            return "∞";
+        }
 
         const seconds = parseInt(timestamp % 60).toString().padStart(2, "0");
         const totalMinutes = Math.floor(timestamp / 60);

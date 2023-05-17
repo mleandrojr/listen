@@ -39,42 +39,42 @@ export default class Podcast {
     public add = async (feed: string) => {
 
         let podcasts: Record<string, PodcastType> = {};
+        let content;
 
         try {
 
-            podcasts = this.localStorageService.get("podcasts") || {};
-
-            if (podcasts && podcasts.hasOwnProperty(feed)) {
-                vscode.window.showErrorMessage(`The podcast ${feed} is already in the library.`);
-                return;
-            }
-
-            const content = await this.getFeed(feed);
+            content = await this.getFeed(feed);
             if (!content) {
                 return;
             }
 
-            const thumbnail = await this.getThumbnail(content.rss.channel.image.url);
-            podcasts[feed] = <PodcastType> {
-                label: content.rss.channel.title,
-                description: content.rss.channel.description,
-                link: content.rss.channel.link,
-                feed: feed,
-                thumbnail: thumbnail,
-                episodes: <Record<string, EpisodeType>> {}
-            };
-
-            podcasts = this.orderByName(podcasts);
-
-            this.localStorageService.set("podcasts", podcasts);
-            this.addEpisodes(feed, content);
-
-            vscode.window.showInformationMessage(`The podcast ${content.rss.channel.title} was successfully added.`);
-
         } catch (error) {
             vscode.window.showErrorMessage(`Invalid URL ${feed}`);
+            return;
         }
 
+        podcasts = this.localStorageService.get("podcasts") || {};
+        if (podcasts && podcasts.hasOwnProperty(feed)) {
+            vscode.window.showErrorMessage(`The podcast ${feed} is already in the library.`);
+            return;
+        }
+
+        const thumbnail = await this.getThumbnail(content.rss.channel.image.url);
+        podcasts[feed] = <PodcastType> {
+            label: content.rss.channel.title,
+            description: content.rss.channel.description,
+            link: content.rss.channel.link,
+            feed: feed,
+            thumbnail: thumbnail,
+            episodes: <Record<string, EpisodeType>> {}
+        };
+
+        podcasts = this.orderByName(podcasts);
+
+        this.localStorageService.set("podcasts", podcasts);
+        this.addEpisodes(feed, content);
+
+        vscode.window.showInformationMessage(`The podcast ${content.rss.channel.title} was successfully added.`);
         this.listen.libraryProvider.refresh();
     };
 
@@ -193,8 +193,9 @@ export default class Podcast {
                 break;
             }
 
-            newEpisodes[episodeData.guid.text] = <EpisodeType> {
-                guid: episodeData.guid.text,
+            const guid = episodeData.guid?.text || episodeData.link;
+            newEpisodes[guid] = <EpisodeType> {
+                guid: guid,
                 title: episodeData.title,
                 description: episodeData.description,
                 link: episodeData.link,

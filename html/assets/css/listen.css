@@ -17,6 +17,7 @@
     display: flex;
     font-size: 1.5em;
     border: none;
+    font-family: var(--vscode-editor-font-family);
     font-weight: 400;
     white-space: nowrap;
 }
@@ -77,6 +78,8 @@
     flex-wrap: wrap;
     justify-content: space-around;
     align-items: center;
+    font-family: var(--vscode-editor-font-family);
+    font-weight: var(--vscode-editor-font-weigh);
 }
 
 .listen-player__cell.align-start {
