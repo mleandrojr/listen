@@ -2,6 +2,7 @@ class ListenPlayer {
 
     label;
     player;
+    source;
     range;
     confirmButton;
     elapsedTime;
@@ -25,6 +26,8 @@ class ListenPlayer {
         this.player.addEventListener("timeupdate", this.playerEvents.timeUpdate);
         this.player.addEventListener("ended", this.playerEvents.ended);
         this.player.volume = 1;
+
+        this.source = document.getElementById("listenAudioSource");
 
         this.confirmButton = document.getElementById("listenAudioConfirmButton");
         this.confirmButton.addEventListener("click", this.confirmInterfaceClick);
@@ -58,7 +61,8 @@ class ListenPlayer {
     changeMedia = async (message) => {
 
         this.range.setAttribute("disabled", "disabled");
-        this.player.src = message.media.url;
+        this.source.src = message.media.url;
+        this.player.load();
 
         try {
 
@@ -72,7 +76,7 @@ class ListenPlayer {
 
     play = async () => {
 
-        if (!this.player.src.length) {
+        if (!this.source.src.length) {
             return;
         }
 
@@ -88,7 +92,7 @@ class ListenPlayer {
 
             const playButton = this.playButton.querySelector("svg use");
             playButton.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#listen-player__icon--pause");
-            this.vscode.postMessage({ command: "playing", media: this.player.src });
+            this.vscode.postMessage({ command: "playing", media: this.source.src });
 
         } catch (err) {
             console.error(err);

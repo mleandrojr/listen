@@ -2,7 +2,7 @@
   "name": "listen",
   "displayName": "Listen!",
   "description": "Listen to podcasts and radio streams while coding.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "mleandrojr",
   "author": "Marcos Leandro",
   "engines": {
@@ -101,9 +101,6 @@
         }
       ]
     },
-    "activationEvents": [
-      "onView:calicoColors.colorsView"
-    ],
     "menus": {
       "view/item/context": [
         {
@@ -174,6 +171,6 @@
   },
   "dependencies": {
     "fast-xml-parser": "^4.2.2",
-    "node-fetch": "^3.3.1"
+    "node-fetch": "^3.2.8"
   }
 }
