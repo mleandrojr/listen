@@ -107,6 +107,7 @@ class ListenPlayer {
         target.innerHTML = target.dataset.thanks;
         this.play();
         setTimeout(() => {
+            target.parentNode.remove();
             target.remove();
         }, 1000);
     };
