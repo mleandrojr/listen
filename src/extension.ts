@@ -36,7 +36,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand("listen.removePodcast", listen.libraryProvider.removePodcast),
         vscode.commands.registerCommand("listen.addRadioStream", listen.radio.openDialog),
         vscode.commands.registerCommand("listen.removeRadio", listen.radio.remove),
-        vscode.commands.registerCommand("listen.addToQueue", listen.queue.add),
+        vscode.commands.registerCommand("listen.addToQueue", listen.queueProvider.add),
         vscode.commands.registerCommand("listen.removeFromQueue", listen.queueProvider.remove),
         vscode.commands.registerCommand("listen.play", listen.queueProvider.play),
         vscode.commands.registerCommand("listen.next", listen.queueProvider.next)

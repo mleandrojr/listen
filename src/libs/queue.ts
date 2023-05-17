@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import Listen from "../listen";
 import LocalStorageService from "../services/localStorageService";
-import { ContentTreeItem, QueueTreeItem } from "./treeItem";
+import { ContentTreeItem } from "./treeItem";
 import { QueueType } from "../types/queue";
 
 export default class Queue {
@@ -14,20 +14,7 @@ export default class Queue {
     constructor(listen: Listen) {
         this.listen = listen;
         this.localStorageService = new LocalStorageService(this.listen.context.globalState);
-        this.refresh();
     }
-
-    refresh = () => {
-
-        const items: Array<Record<string, string>> = this.localStorageService.get("queue") || [];
-        const data = [];
-
-        for (const item of items) {
-            data.push(new QueueTreeItem(item.url, item.label, item.description));
-        }
-
-        this.listen.queueProvider.refresh(data);
-    };
 
     play = async (item: QueueType) => {
 
@@ -71,49 +58,6 @@ export default class Queue {
         this.listen.player.play(media);
     };
 
-    add = async (content: ContentTreeItem) => {
-
-        if (!this.isDoubleClick) {
-
-            this.isDoubleClick = true;
-            setTimeout(() => {
-                this.isDoubleClick = false;
-            }, 300);
-
-            return;
-        }
-
-        if (!content.hasOwnProperty("url")) {
-            return;
-        }
-
-        const queue: Array<QueueType> = this.localStorageService.get("queue") || [];
-        for (const item of queue) {
-            if (item.url === content.url) {
-                return;
-            }
-        }
-
-        const treeviewItem = <QueueType> {
-            url: content.url,
-            label: content.label || "",
-            description: content.description || "",
-        };
-
-        queue.push(treeviewItem);
-        this.localStorageService.set("queue", queue);
-
-        if (queue.length === 1) {
-            this.listen.player.play(<QueueType> {
-                url: treeviewItem.url,
-                label: treeviewItem.label,
-                description: treeviewItem.description
-            });
-        }
-
-        this.refresh();
-    };
-
     remove = async (item: QueueType) => {
 
         const items: QueueType[] = this.localStorageService.get("queue") || [];
@@ -131,7 +75,7 @@ export default class Queue {
         }
 
         this.localStorageService.set("queue", items);
-        this.refresh();
+        this.listen.queueProvider.refresh();
     };
 
     evaluateClick = (e: Record<string, any>) => {

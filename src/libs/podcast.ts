@@ -64,6 +64,8 @@ export default class Podcast {
                 episodes: <Record<string, EpisodeType>> {}
             };
 
+            podcasts = this.orderByName(podcasts);
+
             this.localStorageService.set("podcasts", podcasts);
             this.addEpisodes(feed, content);
 
@@ -203,4 +205,25 @@ export default class Podcast {
         storedData[feed].episodes = parsedEpisodes;
         this.localStorageService.set("podcasts", storedData);
     };
+
+    private orderByName = (podcasts: Record<string, PodcastType>): Record<string, PodcastType> => {
+
+        const podcastArray: PodcastType[] = [];
+        for (const podcast in podcasts) {
+            podcastArray.push(podcasts[podcast]);
+        }
+
+        podcastArray.sort((a, b) => {
+            const nameA = a.label.toUpperCase();
+            const nameB = b.label.toUpperCase();
+            return (nameA < nameB) ? -1 : ((nameA > nameB) ? 1 : 0);
+        });
+
+        podcasts = {};
+        for (const podcast of podcastArray) {
+            podcasts[podcast.feed] = podcast;
+        }
+
+        return podcasts;
+    }
 }
