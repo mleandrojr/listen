@@ -17,9 +17,11 @@ export default class PlayerProvider implements vscode.WebviewViewProvider {
         this.view?.webview.postMessage(message);
     }
 
-    public onDidReceiveMessage(callback: (e: any) => any) {
-        this.view!.webview.onDidReceiveMessage(callback);
-    }
+    public onDidReceiveMessage = (e: Record<string, any>) => {
+        if (this.commands.hasOwnProperty(e.command)) {
+            this.commands[e.command](e);
+        }
+    };
 
     public resolveWebviewView(webviewView: vscode.WebviewView, context: vscode.WebviewViewResolveContext, token: vscode.CancellationToken) {
 
@@ -32,6 +34,7 @@ export default class PlayerProvider implements vscode.WebviewViewProvider {
         };
 
         this.getWebviewContent();
+        this.view.webview.onDidReceiveMessage(this.onDidReceiveMessage);
     }
 
     private getWebviewContent(media?: QueueTreeItem) {
@@ -69,4 +72,22 @@ export default class PlayerProvider implements vscode.WebviewViewProvider {
 
         return text;
     }
+
+    private commands: Record<string, Function> = {
+
+        playing: (e: any) => {
+            const episode = this.listen.episode.findByUrl(e.media);
+            if (episode) {
+                this.listen.episode.markAsRead(episode);
+            }
+        },
+
+        previous: () => {
+            this.listen.queue.previous();
+        },
+
+        next: () => {
+            this.listen.queue.next();
+        },
+    };
 }

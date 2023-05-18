@@ -1,4 +1,3 @@
-import * as vscode from "vscode";
 import Listen from "../listen";
 import Storage from "../services/storage";
 import { ContentTreeItem } from "./treeItem";
@@ -15,6 +14,31 @@ export default class Queue {
         this.listen = listen;
         this.storage = new Storage(this.listen.context);
     }
+
+    previous = async () => {
+
+        const queue = this.storage.get("queue") || [];
+
+        let idx = null;
+        for (let i = 0, length = queue.length; i < length; i++) {
+            if (queue[i].url === this.selectedItem?.url) {
+                idx = --i;
+                break;
+            }
+        }
+
+        if (idx === null || idx < 0 || !queue[idx]) {
+            return;
+        }
+
+        const media: QueueType = {
+            url: queue[idx].url!,
+            label: queue[idx].label,
+            description: queue[idx].description
+        };
+
+        this.play(media, true);
+    };
 
     play = async (item: QueueType, ignoreDoubleClick?: Boolean) => {
 
@@ -46,7 +70,7 @@ export default class Queue {
             }
         }
 
-        if (!idx || !queue[idx]) {
+        if (idx === null || !queue[idx]) {
             return;
         }
 

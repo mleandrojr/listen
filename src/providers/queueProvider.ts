@@ -21,7 +21,7 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
         this.refresh();
     }
 
-    refresh(): void {
+    public refresh(): void {
 
         const items: Array<Record<string, string>> = this.storage.get("queue") || [];
         const data = [];
@@ -38,11 +38,11 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
         this._onDidChangeTreeData.fire();
     }
 
-    getTreeItem(element: QueueTreeItem): QueueTreeItem {
+    public getTreeItem(element: QueueTreeItem): QueueTreeItem {
         return element;
     }
 
-    getChildren(element?: QueueTreeItem|undefined): Promise<QueueTreeItem[]> {
+    public getChildren(element?: QueueTreeItem|undefined): Promise<QueueTreeItem[]> {
         if (typeof element === "undefined") {
             return Promise.resolve(this.data);
         }
@@ -50,7 +50,7 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
         return Promise.resolve([]);
     };
 
-    add = async (content: ContentTreeItem) => {
+    public add = async (content: ContentTreeItem) => {
 
         if (!this.isDoubleClick) {
 
@@ -67,10 +67,9 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
         }
 
         const queue: Array<QueueType> = this.storage.get("queue") || [];
-        for (const item of queue) {
-            if (item.url === content.url) {
-                return;
-            }
+
+        if (this.isItemInQueue(queue, content)) {
+            return;
         }
 
         const treeviewItem = <QueueType> {
@@ -92,18 +91,26 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
         this.refresh();
     };
 
-    play = (item: QueueTreeItem) => {
+    public previous = () => {
+        this.listen.queue.previous();
+    };
+
+    public play = (item: QueueTreeItem) => {
 
         const media: QueueType = {
-            label: item.description,
             url: item.url!,
+            label: item.description,
             description: item.description
         };
 
         this.listen.queue.play(media);
     };
 
-    remove = (treeItem: QueueTreeItem) => {
+    public next = () => {
+        this.listen.queue.next();
+    };
+
+    public remove = (treeItem: QueueTreeItem) => {
 
         const item: QueueType = {
             label: treeItem.label,
@@ -114,12 +121,18 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
         this.listen.queue.remove(item);
     };
 
-    next = () => {
-        this.listen.queue.next();
-    };
-
-    clear = () => {
+    public clear = () => {
         this.storage.set("queue", []);
         this.refresh();
-    }
+    };
+
+    private isItemInQueue = (queue: QueueType[], content: ContentTreeItem): Boolean  => {
+        for (const item of queue) {
+            if (item.url === content.url) {
+                return true;
+            }
+        }
+
+        return false;
+    };
 }

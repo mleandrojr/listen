@@ -6,7 +6,11 @@ class ListenPlayer {
     confirmButton;
     elapsedTime;
     timeLimit;
+    rewindButton;
+    previousButton;
     playButton;
+    nextButton;
+    fastForwardButton;
     vscode;
     isTimeRangeDragging = false;
 
@@ -29,7 +33,6 @@ class ListenPlayer {
             console.log('Error code: ' + this.player.error.code);
             console.log('Error message: ' + this.player.error.message);
         });
-        this.player.volume = 1;
 
         this.confirmButton = document.getElementById("listenAudioConfirmButton");
         this.confirmButton.addEventListener("click", this.confirmInterfaceClick);
@@ -37,9 +40,22 @@ class ListenPlayer {
         this.elapsedTime = document.getElementById("listenAudioElapsedTime");
         this.timeLimit = document.getElementById("listenAudioTimeLimit");
 
+        // this.rewindButton = document.getElementById("listenAudioRewindButton");
+        // this.rewindButton.addEventListener("click", this.rewind);
+
+        this.previousButton = document.getElementById("listenAudioPreviousButton");
+        this.previousButton.addEventListener("click", this.previous);
+
         this.playButton = document.getElementById("listenAudioPlayButton");
         this.playButton.addEventListener("click", this.playHandler);
 
+        this.nextButton = document.getElementById("listenAudioNextButton");
+        this.nextButton.addEventListener("click", this.next);
+
+        // this.fastForwardButton = document.getElementById("listenAudioFastForwardButton");
+        // this.fastForwardButton.addEventListener("click", this.fastForward);
+
+        this.player.volume = 1;
         window.addEventListener("message", this.executeCommand);
     }
 
@@ -69,11 +85,25 @@ class ListenPlayer {
         try {
 
             this.play();
-            this.label.innerHTML = message.media.label;
+            this.label.innerHTML = message.media.label?.length ? message.media.label : message.media.description;
 
         } catch(err) {
             console.error(err);
         }
+    };
+
+    rewind = () => {
+        this.player.currentTime -= 5;
+    };
+
+    previous = (e) => {
+
+        if (this.player.currentTime > 5) {
+            this.player.currentTime = 0;
+            return;
+        }
+
+        this.vscode.postMessage({ command: "previous" });
     };
 
     play = async () => {
@@ -99,6 +129,14 @@ class ListenPlayer {
         } catch (err) {
             console.error(err);
         }
+    };
+
+    next = (e) => {
+        this.vscode.postMessage({ command: "next" });
+    };
+
+    fastForward = () => {
+        this.player.currentTime += 5;
     };
 
     pause = async () => {
