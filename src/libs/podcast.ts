@@ -74,6 +74,7 @@ export default class Podcast {
         podcasts = this.orderByName(podcasts);
 
         this.storage.set("podcasts", podcasts);
+        this.listen.libraryProvider.refresh();
         this.addEpisodes(feed, content);
 
         vscode.window.showInformationMessage(`The podcast ${content.rss.channel.title} was successfully added.`);
@@ -195,32 +196,41 @@ export default class Podcast {
         }
 
         const episodes = storedData[feed].episodes;
-        const newEpisodes: Record<string, EpisodeType> = {};
+        let newEpisodes: Record<string, EpisodeType> = {};
 
         for (const newEpisode in content.rss.channel.item) {
-
-            const episodeData: Record<string, any> = content.rss.channel.item[newEpisode];
-            if (episodeData.guid in episodes) {
-                break;
-            }
-
-            const guid = episodeData.guid?.text || episodeData.link;
-            newEpisodes[guid] = <EpisodeType> {
-                guid: guid,
-                title: episodeData.title,
-                description: episodeData.description,
-                link: episodeData.link,
-                pubDate: episodeData.pubDate,
-                duration: episodeData["itunes:duration"],
-                url: episodeData.enclosure["@_url"],
-                length: episodeData.enclosure["@_length"],
-                new: true
-            };
+            newEpisodes = this.appendEpisode(newEpisodes, content.rss.channel.item[newEpisode]);
         }
 
         const parsedEpisodes: Record<string, EpisodeType> = {...newEpisodes, ...episodes};
         storedData[feed].episodes = parsedEpisodes;
         this.storage.set("podcasts", storedData);
+    };
+
+    private appendEpisode = (episodes: Record<string, EpisodeType>, episode: Record<string, any>): Record<string, EpisodeType> => {
+
+        if (episode.guid in episodes) {
+            return episodes;
+        }
+
+        if (!episode.enclosure?.hasOwnProperty("@_url")) {
+            return episodes;
+        }
+
+        const guid = episode.guid?.text || episode.link;
+        episodes[guid] = <EpisodeType> {
+            guid: guid,
+            title: episode.title,
+            description: episode.description,
+            link: episode.link,
+            pubDate: episode.pubDate,
+            duration: episode["itunes:duration"],
+            url: episode.enclosure["@_url"],
+            length: episode.enclosure["@_length"],
+            new: true
+        };
+
+        return episodes;
     };
 
     private orderByName = (podcasts: Record<string, PodcastType>): Record<string, PodcastType> => {
