@@ -30,7 +30,11 @@
       },
       {
         "command": "listen.refreshAllPodcasts",
-        "title": "Update All Podcasts"
+        "title": "Update All Podcasts",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        }
       },
       {
         "command": "listen.refreshPodcast",
@@ -46,8 +50,8 @@
         "title": "Remove Podcast",
         "category": "listen.podcast",
         "icon": {
-          "light": "resources/light/remove.svg",
-          "dark": "resources/dark/remove.svg"
+          "light": "resources/light/trash.svg",
+          "dark": "resources/dark/trash.svg"
         }
       },
       {
@@ -55,8 +59,8 @@
         "title": "Remove Radio",
         "category": "listen.radio",
         "icon": {
-          "light": "resources/light/remove.svg",
-          "dark": "resources/dark/remove.svg"
+          "light": "resources/light/trash.svg",
+          "dark": "resources/dark/trash.svg"
         }
       },
       {
@@ -82,7 +86,11 @@
       {
         "command": "listen.clearQueue",
         "title": "Empty the Queue",
-        "category": "listen.queue"
+        "category": "listen.queue",
+        "icon": {
+          "light": "resources/light/trash.svg",
+          "dark": "resources/dark/trash.svg"
+        }
       }
     ],
     "viewsContainers": {
