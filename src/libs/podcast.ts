@@ -172,7 +172,6 @@ export default class Podcast {
 
     private async getThumbnail(url: string): Promise<any> {
 
-        console.log(url);
         const response: Record<any, any> = await fetch(url);
         const contentType = response.headers.get("content-type");
         const content: string = Buffer.from(await response.arrayBuffer()).toString("base64");

@@ -78,6 +78,11 @@
         "command": "listen.next",
         "title": "Play",
         "category": "listen.queue"
+      },
+      {
+        "command": "listen.clearQueue",
+        "title": "Empty the Queue",
+        "category": "listen.queue"
       }
     ],
     "viewsContainers": {
@@ -107,6 +112,18 @@
       ]
     },
     "menus": {
+      "view/title": [
+        {
+          "command": "listen.refreshAllPodcasts",
+          "group": "navigation",
+          "when": "view == listenLibrary"
+        },
+        {
+          "command": "listen.clearQueue",
+          "group": "navigation",
+          "when": "view == listenQueue"
+        }
+      ],
       "view/item/context": [
         {
           "command": "listen.addPodcast",

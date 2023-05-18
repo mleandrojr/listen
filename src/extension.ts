@@ -16,14 +16,13 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand("listen.addToQueue", listen.queueProvider.add),
         vscode.commands.registerCommand("listen.removeFromQueue", listen.queueProvider.remove),
         vscode.commands.registerCommand("listen.play", listen.queueProvider.play),
-        vscode.commands.registerCommand("listen.next", listen.queueProvider.next)
+        vscode.commands.registerCommand("listen.next", listen.queueProvider.next),
+        vscode.commands.registerCommand("listen.clearQueue", listen.queueProvider.clear)
     ];
 
     for (const disposable of disposables) {
         context.subscriptions.push(disposable);
     }
-
-    console.log(context.globalStorageUri);
 }
 
 export function deactivate() {}

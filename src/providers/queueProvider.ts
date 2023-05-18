@@ -12,7 +12,6 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
     private data: QueueTreeItem[] = [];
     private isDoubleClick: boolean = false;
     private storage: Storage;
-    private currentItem?: QueueTreeItem;
 
     constructor(listen: Listen) {
         this.listen = listen;
@@ -118,4 +117,9 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
     next = () => {
         this.listen.queue.next();
     };
+
+    clear = () => {
+        this.storage.set("queue", []);
+        this.refresh();
+    }
 }
