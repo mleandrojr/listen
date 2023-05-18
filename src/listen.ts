@@ -7,10 +7,12 @@ import Radio from "./libs/radio";
 import LibraryProvider from "./providers/libraryProvider";
 import PlayerProvider from "./providers/playerProviders";
 import QueueProvider from "./providers/queueProvider";
+import Storage from "./services/storage";
 import * as vscode from "vscode";
 
 export default class Listen {
 
+    public storage: Storage;
     public context: vscode.ExtensionContext;
     public libraryProvider: LibraryProvider;
     public queueProvider: QueueProvider;
@@ -28,6 +30,7 @@ export default class Listen {
 
         this.context = context;
 
+        this.storage = new Storage(this.context);
         this.library = new Library(this);
         this.podcast = new Podcast(this);
         this.episode = new Episode(this);
@@ -48,11 +51,11 @@ export default class Listen {
         );
 
         this.libraryTreeView = vscode.window.createTreeView("listenLibrary", {
-            treeDataProvider: this.libraryProvider
+            treeDataProvider: this.libraryProvider, showCollapseAll: true
         });
 
         this.queueTreeView = vscode.window.createTreeView("listenQueue", {
-            treeDataProvider: this.queueProvider
+            treeDataProvider: this.queueProvider, canSelectMany: true
         });
     }
 }

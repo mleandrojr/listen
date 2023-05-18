@@ -22,6 +22,8 @@ export function activate(context: vscode.ExtensionContext) {
     for (const disposable of disposables) {
         context.subscriptions.push(disposable);
     }
+
+    console.log(context.globalStorageUri);
 }
 
 export function deactivate() {}

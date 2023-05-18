@@ -1,19 +1,19 @@
 import * as vscode from "vscode";
 import Listen from "../listen";
-import LocalStorageService from "../services/localStorageService";
+import Storage from "../services/storage";
 import { ContentTreeItem } from "./treeItem";
 import { QueueType } from "../types/queue";
 
 export default class Queue {
 
     private listen: Listen;
-    private localStorageService: LocalStorageService;
+    private storage: Storage;
     private selectedItem?: ContentTreeItem;
     private isDoubleClick: boolean = false;
 
     constructor(listen: Listen) {
         this.listen = listen;
-        this.localStorageService = new LocalStorageService(this.listen.context.globalState);
+        this.storage = new Storage(this.listen.context);
     }
 
     play = async (item: QueueType, ignoreDoubleClick?: Boolean) => {
@@ -36,7 +36,7 @@ export default class Queue {
 
     next = async () => {
 
-        const queue = this.localStorageService.get("queue") || [];
+        const queue = this.storage.get("queue") || [];
 
         let idx = null;
         for (let i = 0, length = queue.length; i < length; i++) {
@@ -61,7 +61,7 @@ export default class Queue {
 
     remove = async (item: QueueType) => {
 
-        const items: QueueType[] = this.localStorageService.get("queue") || [];
+        const items: QueueType[] = this.storage.get("queue") || [];
 
         let idx = null;
         for (let i = 0, length = items.length; i < length; i++) {
@@ -75,7 +75,7 @@ export default class Queue {
             items.splice(idx, 1);
         }
 
-        this.localStorageService.set("queue", items);
+        this.storage.set("queue", items);
         this.listen.queueProvider.refresh();
     };
 

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import Listen from "../listen";
-import LocalStorageService from "../services/localStorageService";
+import Storage from "../services/storage";
 import { ContentTreeItem, QueueTreeItem } from "../libs/treeItem";
 import { QueueType } from "../types/queue";
 
@@ -11,12 +11,12 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
     private listen: Listen;
     private data: QueueTreeItem[] = [];
     private isDoubleClick: boolean = false;
-    private localStorageService: LocalStorageService;
+    private storage: Storage;
     private currentItem?: QueueTreeItem;
 
     constructor(listen: Listen) {
         this.listen = listen;
-        this.localStorageService = new LocalStorageService(this.listen.context.globalState);
+        this.storage = new Storage(this.listen.context);
         this._onDidChangeTreeData = new vscode.EventEmitter<vscode.TreeItem | undefined | null | void>();
         this.onDidChangeTreeData = this._onDidChangeTreeData.event;
         this.refresh();
@@ -24,7 +24,7 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
 
     refresh(): void {
 
-        const items: Array<Record<string, string>> = this.localStorageService.get("queue") || [];
+        const items: Array<Record<string, string>> = this.storage.get("queue") || [];
         const data = [];
 
         for (const item of items) {
@@ -67,7 +67,7 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
             return;
         }
 
-        const queue: Array<QueueType> = this.localStorageService.get("queue") || [];
+        const queue: Array<QueueType> = this.storage.get("queue") || [];
         for (const item of queue) {
             if (item.url === content.url) {
                 return;
@@ -81,7 +81,7 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
         };
 
         queue.push(treeviewItem);
-        this.localStorageService.set("queue", queue);
+        this.storage.set("queue", queue);
 
         if (queue.length === 1) {
             this.listen.player.play(<QueueType> {

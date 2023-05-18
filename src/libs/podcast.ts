@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import Listen from "../listen";
 import fetch from "node-fetch";
-import LocalStorageService from "../services/localStorageService";
+import Storage from "../services/storage";
 import { XMLParser } from "fast-xml-parser";
 import { PodcastType } from "../types/podcast";
 import { EpisodeType } from "../types/episode";
@@ -9,11 +9,11 @@ import { EpisodeType } from "../types/episode";
 export default class Podcast {
 
     private listen: Listen;
-    private localStorageService: LocalStorageService;
+    private storage: Storage;
 
     constructor(listen: Listen) {
         this.listen = listen;
-        this.localStorageService = new LocalStorageService(this.listen.context.globalState);
+        this.storage = new Storage(this.listen.context);
     }
 
     public openDialog = async () => {
@@ -53,7 +53,7 @@ export default class Podcast {
             return;
         }
 
-        podcasts = this.localStorageService.get("podcasts") || {};
+        podcasts = this.storage.get("podcasts") || {};
         if (podcasts && podcasts.hasOwnProperty(feed)) {
             vscode.window.showErrorMessage(`The podcast ${feed} is already in the library.`);
             return;
@@ -73,7 +73,7 @@ export default class Podcast {
 
         podcasts = this.orderByName(podcasts);
 
-        this.localStorageService.set("podcasts", podcasts);
+        this.storage.set("podcasts", podcasts);
         this.addEpisodes(feed, content);
 
         vscode.window.showInformationMessage(`The podcast ${content.rss.channel.title} was successfully added.`);
@@ -88,7 +88,7 @@ export default class Podcast {
 
     public updateAll = async () => {
 
-        const podcasts = <Record<string, PodcastType>> this.localStorageService.get("podcasts") || {};
+        const podcasts = <Record<string, PodcastType>> this.storage.get("podcasts") || {};
         for (const podcast in podcasts) {
             this.update(podcasts[podcast]);
         }
@@ -98,10 +98,10 @@ export default class Podcast {
 
     public remove = async (podcastItem: PodcastType): Promise<void> => {
 
-        const podcasts = <Record<string, PodcastType>> this.localStorageService.get("podcasts") || {};
+        const podcasts = <Record<string, PodcastType>> this.storage.get("podcasts") || {};
         delete podcasts[podcastItem.feed];
 
-        this.localStorageService.set("podcasts", podcasts);
+        this.storage.set("podcasts", podcasts);
 
         vscode.window.showInformationMessage(`The podcast ${podcastItem.label} was successfully removed.`);
         this.listen.libraryProvider.refresh();
@@ -109,7 +109,7 @@ export default class Podcast {
 
     public markAsRead = (podcastItem: PodcastType) => {
 
-        const storedData: Record<string, PodcastType> = this.localStorageService.get("podcasts");
+        const storedData: Record<string, PodcastType> = this.storage.get("podcasts");
         const podcast = storedData[podcastItem.feed];
 
         if (!podcast || !podcast.episodes.length) {
@@ -120,7 +120,7 @@ export default class Podcast {
             this.listen.episode.markAsRead(podcast.episodes[episode]);
         }
 
-        this.localStorageService.set("podcasts", storedData);
+        this.storage.set("podcasts", storedData);
         this.listen.libraryProvider.refresh();
     };
 
@@ -190,7 +190,7 @@ export default class Podcast {
             return;
         }
 
-        const storedData: Record<string, PodcastType> = this.localStorageService.get("podcasts");
+        const storedData: Record<string, PodcastType> = this.storage.get("podcasts");
         if (!storedData || !storedData.hasOwnProperty(feed)) {
             return;
         }
@@ -221,7 +221,7 @@ export default class Podcast {
 
         const parsedEpisodes: Record<string, EpisodeType> = {...newEpisodes, ...episodes};
         storedData[feed].episodes = parsedEpisodes;
-        this.localStorageService.set("podcasts", storedData);
+        this.storage.set("podcasts", storedData);
     };
 
     private orderByName = (podcasts: Record<string, PodcastType>): Record<string, PodcastType> => {

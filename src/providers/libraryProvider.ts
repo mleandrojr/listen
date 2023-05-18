@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import Listen from '../listen';
-import LocalStorageService from '../services/localStorageService';
+import Storage from '../services/storage';
 import { ContentTreeItem, PodcastItem, RadioItem } from '../libs/treeItem';
 import { PodcastType } from '../types/podcast';
 
@@ -10,11 +10,11 @@ export default class LibraryProvider implements vscode.TreeDataProvider<ContentT
     private _onDidChangeTreeData: vscode.EventEmitter<ContentTreeItem | undefined | null | void>;
     private listen: Listen;
     private data: ContentTreeItem[] = [];
-    private localStorageService: LocalStorageService;
+    private storage: Storage;
 
     public constructor(listen: Listen) {
         this.listen = listen;
-        this.localStorageService = new LocalStorageService(this.listen.context.globalState);
+        this.storage = new Storage(this.listen.context);
         this._onDidChangeTreeData = new vscode.EventEmitter<ContentTreeItem | undefined | null | void>();
         this.onDidChangeTreeData = this._onDidChangeTreeData.event;
         this.refresh();
@@ -79,7 +79,7 @@ export default class LibraryProvider implements vscode.TreeDataProvider<ContentT
     private getPodcasts = (): PodcastItem[] => {
 
         const data = [];
-        const podcasts: Record<string, any> = this.localStorageService.get("podcasts");
+        const podcasts: Record<string, any> = this.storage.get("podcasts");
 
         for (const podcast in podcasts) {
             data.push(new PodcastItem(podcasts[podcast]));
@@ -91,7 +91,7 @@ export default class LibraryProvider implements vscode.TreeDataProvider<ContentT
     private getRadios = (): RadioItem[] => {
 
         const data = [];
-        const radios: Record<string, any> = this.localStorageService.get("radios");
+        const radios: Record<string, any> = this.storage.get("radios");
 
         for (const radio in radios) {
             data.push(new RadioItem(radios[radio].title, radios[radio].url));
