@@ -22,7 +22,6 @@ export default class Storage {
 
     public get(key: string): any {
 
-        console.log(`${this.path}/${key}.json`);
         if (!fs.existsSync(`${this.path}/${key}.json`)) {
             return null;
         }
