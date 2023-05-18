@@ -40,8 +40,8 @@ class ListenPlayer {
         this.elapsedTime = document.getElementById("listenAudioElapsedTime");
         this.timeLimit = document.getElementById("listenAudioTimeLimit");
 
-        // this.rewindButton = document.getElementById("listenAudioRewindButton");
-        // this.rewindButton.addEventListener("click", this.rewind);
+        this.rewindButton = document.getElementById("listenAudioRewindButton");
+        this.rewindButton.addEventListener("click", this.rewind);
 
         this.previousButton = document.getElementById("listenAudioPreviousButton");
         this.previousButton.addEventListener("click", this.previous);
@@ -52,8 +52,8 @@ class ListenPlayer {
         this.nextButton = document.getElementById("listenAudioNextButton");
         this.nextButton.addEventListener("click", this.next);
 
-        // this.fastForwardButton = document.getElementById("listenAudioFastForwardButton");
-        // this.fastForwardButton.addEventListener("click", this.fastForward);
+        this.fastForwardButton = document.getElementById("listenAudioFastForwardButton");
+        this.fastForwardButton.addEventListener("click", this.fastForward);
 
         this.player.volume = 1;
         window.addEventListener("message", this.executeCommand);
@@ -93,7 +93,7 @@ class ListenPlayer {
     };
 
     rewind = () => {
-        this.player.currentTime -= 5;
+        this.player.currentTime -= 15;
     };
 
     previous = (e) => {
@@ -136,7 +136,7 @@ class ListenPlayer {
     };
 
     fastForward = () => {
-        this.player.currentTime += 5;
+        this.player.currentTime += 15;
     };
 
     pause = async () => {

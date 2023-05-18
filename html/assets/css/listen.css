@@ -51,7 +51,6 @@
 .listen-player__link {
     color: var(--vscode-button-background);
     text-decoration: none;
-    max-width: 40%;
 }
 
 .listen-player__link:hover {
@@ -67,19 +66,24 @@
     pointer-events: none;
 }
 
-.listen-player__link.is-big {
-    max-width: 90% !important;
-}
-
 .listen-player__cell {
     display: flex;
-    flex: 1 1 33.33%;
+    flex: 1 1 20%;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-around;
     align-items: center;
     font-family: var(--vscode-editor-font-family);
     font-weight: var(--vscode-editor-font-weigh);
+    padding: 0 8px;
+}
+
+.listen-player__cell.is-big {
+    flex: 1 0 25%;
+}
+
+.listen-player__cell.is-small {
+    flex: 1 0 10%;
 }
 
 .listen-player__cell.align-start {
@@ -102,6 +106,7 @@
     z-index: 9999;
     background-color: var(--vscode-input-background);
 }
+
 .listen-player__button {
     color: var(--vscode-foreground);
     background-color: var(--vscode-button-background);

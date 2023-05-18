@@ -18,6 +18,7 @@ export default class PlayerProvider implements vscode.WebviewViewProvider {
     }
 
     public onDidReceiveMessage = (e: Record<string, any>) => {
+        console.log(e);
         if (this.commands.hasOwnProperty(e.command)) {
             this.commands[e.command](e);
         }
