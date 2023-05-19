@@ -79,11 +79,11 @@
 }
 
 .listen-player__cell.is-big {
-    flex: 1 0 25%;
+    flex: 1 0 23%;
 }
 
 .listen-player__cell.is-small {
-    flex: 1 0 10%;
+    flex: 1 0 9%;
 }
 
 .listen-player__cell.align-start {
