@@ -1,4 +1,3 @@
-import { ConsoleReporter } from "@vscode/test-electron";
 import Listen from "../listen";
 import { QueueType } from "../types/queue";
 
@@ -19,5 +18,10 @@ export default class Player {
 
         this.currentMedia = media;
         this.listen.playerProvider.postMessage({ command: "changeMedia", media: media });
+    };
+
+    public stop = async () => {
+        this.currentMedia = undefined;
+        this.listen.playerProvider.postMessage({ command: "stop" });
     };
 }

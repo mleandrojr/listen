@@ -99,7 +99,7 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
 
         const media: QueueType = {
             url: item.url!,
-            label: item.description,
+            label: item.label,
             description: item.description
         };
 
@@ -108,6 +108,10 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
 
     public next = () => {
         this.listen.queue.next();
+    };
+
+    public stop = () => {
+        this.listen.player.stop();
     };
 
     public remove = (treeItem: QueueTreeItem) => {

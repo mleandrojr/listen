@@ -79,17 +79,39 @@
         "category": "listen.queue"
       },
       {
-        "command": "listen.next",
-        "title": "Play",
-        "category": "listen.queue"
-      },
-      {
         "command": "listen.clearQueue",
         "title": "Empty the Queue",
         "category": "listen.queue",
         "icon": {
           "light": "resources/light/trash.svg",
           "dark": "resources/dark/trash.svg"
+        }
+      },
+      {
+        "command": "listen.previous",
+        "title": "Previous",
+        "category": "listen.player",
+        "icon": {
+          "light": "resources/light/player/previous.svg",
+          "dark": "resources/dark/player/previous.svg"
+        }
+      },
+      {
+        "command": "listen.stop",
+        "title": "Stop",
+        "category": "listen.player",
+        "icon": {
+          "light": "resources/light/player/stop.svg",
+          "dark": "resources/dark/player/stop.svg"
+        }
+      },
+      {
+        "command": "listen.next",
+        "title": "Next",
+        "category": "listen.player",
+        "icon": {
+          "light": "resources/light/player/next.svg",
+          "dark": "resources/dark/player/next.svg"
         }
       }
     ],
@@ -130,6 +152,21 @@
           "command": "listen.clearQueue",
           "group": "navigation",
           "when": "view == listenQueue"
+        },
+        {
+          "command": "listen.previous",
+          "group": "navigation@0",
+          "when": "view == listenPlayer"
+        },
+        {
+          "command": "listen.stop",
+          "group": "navigation@1",
+          "when": "view == listenPlayer"
+        },
+        {
+          "command": "listen.next",
+          "group": "navigation@2",
+          "when": "view == listenPlayer"
         }
       ],
       "view/item/context": [

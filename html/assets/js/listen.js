@@ -28,11 +28,6 @@ class ListenPlayer {
         this.player.addEventListener("loadedmetadata", this.playerEvents.loadedMetadata);
         this.player.addEventListener("timeupdate", this.playerEvents.timeUpdate);
         this.player.addEventListener("ended", this.playerEvents.ended);
-        this.player.addEventListener("error", (e) => {
-            console.log(e);
-            console.log('Error code: ' + this.player.error.code);
-            console.log('Error message: ' + this.player.error.message);
-        });
 
         this.confirmButton = document.getElementById("listenAudioConfirmButton");
         this.confirmButton.addEventListener("click", this.confirmInterfaceClick);
@@ -83,7 +78,6 @@ class ListenPlayer {
         this.player.load();
 
         try {
-
             this.play();
             this.label.innerHTML = message.media.label?.length ? message.media.label : message.media.description;
 
@@ -143,6 +137,13 @@ class ListenPlayer {
         this.player.pause();
         const playButton = this.playButton.querySelector("svg use");
         playButton.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#listen-player__icon--play");
+    };
+
+    stop = () => {
+        this.pause();
+        this.player.currentTime = 0;
+        this.player.src = "";
+        this.label.innerHTML = "&nbsp;";
     };
 
     confirmInterfaceClick = (e) => {

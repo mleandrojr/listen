@@ -58,6 +58,11 @@ export default class Queue {
         return;
     };
 
+    stop = async () => {
+        this.listen.player.stop();
+        this.selectedItem = undefined;
+    };
+
     next = async () => {
 
         const queue = this.storage.get("queue") || [];

@@ -13,7 +13,7 @@ export default class Storage {
         }
 
         this.context = context;
-        this.path = this.context.globalStorageUri.path;
+        this.path = this.context.globalStorageUri.path.replace(/\s/g, "\\ ");
 
         if (!fs.existsSync(`${this.path}`)) {
             fs.mkdirSync(`${this.path}`);
