@@ -65,6 +65,22 @@ export default class LibraryProvider implements vscode.TreeDataProvider<ContentT
         this.listen.podcast.update(data);
     };
 
+    public markPodcastAsListened = (podcast: PodcastItem) => {
+
+        const podcasts: Record<string, any> = this.storage.get("podcasts");
+        if (!podcasts[podcast.feed!]) {
+            return;
+        }
+
+        const episodes = podcasts[podcast.feed!].episodes;
+        for (const episode in episodes) {
+            episodes[episode].new = false;
+        }
+
+        this.storage.set("podcasts", podcasts);
+        this.refresh();
+    };
+
     public removePodcast = (podcast: PodcastItem) => {
 
         const data: PodcastType = {

@@ -46,6 +46,11 @@
         }
       },
       {
+        "command": "listen.markPodcastAsListened",
+        "title": "Mark as Listened",
+        "category": "listen.podcast"
+      },
+      {
         "command": "listen.removePodcast",
         "title": "Remove Podcast",
         "category": "listen.podcast",
@@ -180,6 +185,12 @@
         },
         {
           "command": "listen.refreshPodcast",
+          "group": "podcast@0",
+          "when": "view == listenLibrary && viewItem == podcast"
+        },
+        {
+          "command": "listen.markPodcastAsListened",
+          "group": "podcast@1",
           "when": "view == listenLibrary && viewItem == podcast"
         },
         {
@@ -188,6 +199,7 @@
         },
         {
           "command": "listen.removePodcast",
+          "group": "podcast@2",
           "when": "view == listenLibrary && viewItem == podcast"
         },
         {
