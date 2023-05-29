@@ -1,17 +1,17 @@
 import * as vscode from 'vscode';
 import Listen from '../listen';
-import Storage from '../services/storage';
+import Database from '../services/database';
 import { RadioType } from '../types/radio';
 import { RadioItem } from './treeItem';
 
 export default class Radio {
 
     private listen: Listen;
-    private storage: Storage;
+    private database: Database;
 
     constructor(listen: Listen) {
         this.listen = listen;
-        this.storage = new Storage(this.listen.context);
+        this.database = new Database(this.listen.context);
     }
 
     openDialog = async () => {
@@ -42,7 +42,7 @@ export default class Radio {
 
     add = async (url: string, name?: string) => {
 
-        const radios: Record<string, any> = this.storage.get("radios") || {};
+        const radios: Record<string, any> = this.database.get("radios") || {};
 
         if (radios && radios.hasOwnProperty(url)) {
             vscode.window.showErrorMessage(`The radio stream ${url} is already in the library.`);
@@ -55,7 +55,7 @@ export default class Radio {
         };
 
         radios[url] = radio;
-        this.storage.set("radios", radios);
+        this.database.set("radios", radios);
 
         vscode.window.showInformationMessage(`The radio stream ${name || url} was successfully added.`);
         this.listen.libraryProvider.refresh();
@@ -63,11 +63,11 @@ export default class Radio {
 
     remove = async (radio: RadioItem) => {
 
-        const radios: Record<string, any> = this.storage.get("radios") || {};
+        const radios: Record<string, any> = this.database.get("radios") || {};
         delete radios[radio.description];
 
         const label = radio.label || radio.description;
-        this.storage.set("radios", radios);
+        this.database.set("radios", radios);
 
         vscode.window.showInformationMessage(`The radio stream ${label} was successfully removed.`);
         this.listen.libraryProvider.refresh();

@@ -1,4 +1,3 @@
-import Library from "./libs/library";
 import Player from "./libs/player";
 import Podcast from "./libs/podcast";
 import Episode from "./libs/episode";
@@ -7,17 +6,16 @@ import Radio from "./libs/radio";
 import LibraryProvider from "./providers/libraryProvider";
 import PlayerProvider from "./providers/playerProviders";
 import QueueProvider from "./providers/queueProvider";
-import Storage from "./services/storage";
+import Database from "./services/database";
 import * as vscode from "vscode";
 
 export default class Listen {
 
-    public storage: Storage;
     public context: vscode.ExtensionContext;
+    public database: Database;
     public libraryProvider: LibraryProvider;
     public queueProvider: QueueProvider;
     public playerProvider: PlayerProvider;
-    public library: Library;
     public podcast: Podcast;
     public episode: Episode;
     public radio: Radio;
@@ -29,9 +27,9 @@ export default class Listen {
     public constructor(context: vscode.ExtensionContext) {
 
         this.context = context;
+        this.context.globalState.setKeysForSync(["podcasts", "radios"]);
 
-        this.storage = new Storage(this.context);
-        this.library = new Library(this);
+        this.database = new Database(this.context);
         this.podcast = new Podcast(this);
         this.episode = new Episode(this);
         this.radio = new Radio(this);

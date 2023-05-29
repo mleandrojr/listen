@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import fetch from "node-fetch";
 
 export class ContentTreeItem extends vscode.TreeItem {
 
@@ -60,10 +61,7 @@ export class PodcastItem extends ContentTreeItem {
         this.feed = podcast.feed;
         this.children = this.getEpisodes(podcast);
         this.contextValue = "podcast";
-        this.iconPath = vscode.Uri.from({
-            scheme: "data",
-            path: podcast.thumbnail
-        });
+        this.iconPath = vscode.Uri.parse(podcast.thumbnail.replace(/http:\/\//, "https://"));
     }
 
     private getEpisodes = (podcast: Record<string, any>) => {

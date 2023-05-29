@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import Listen from "../listen";
-import Storage from "../services/storage";
+import Database from "../services/database";
 import { ContentTreeItem, QueueTreeItem } from "../libs/treeItem";
 import { QueueType } from "../types/queue";
 
@@ -11,11 +11,11 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
     private listen: Listen;
     private data: QueueTreeItem[] = [];
     private isDoubleClick: boolean = false;
-    private storage: Storage;
+    private database: Database;
 
     constructor(listen: Listen) {
         this.listen = listen;
-        this.storage = new Storage(this.listen.context);
+        this.database = new Database(this.listen.context);
         this._onDidChangeTreeData = new vscode.EventEmitter<vscode.TreeItem | undefined | null | void>();
         this.onDidChangeTreeData = this._onDidChangeTreeData.event;
         this.refresh();
@@ -23,7 +23,7 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
 
     public refresh(): void {
 
-        const items: Array<Record<string, string>> = this.storage.get("queue") || [];
+        const items: Array<Record<string, string>> = this.database.get("queue") || [];
         const data = [];
 
         for (const item of items) {
@@ -66,7 +66,7 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
             return;
         }
 
-        const queue: Array<QueueType> = this.storage.get("queue") || [];
+        const queue: Array<QueueType> = this.database.get("queue") || [];
 
         if (this.isItemInQueue(queue, content)) {
             return;
@@ -79,7 +79,7 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
         };
 
         queue.push(treeviewItem);
-        this.storage.set("queue", queue);
+        this.database.set("queue", queue);
 
         if (queue.length === 1) {
             this.listen.player.play(<QueueType> {
@@ -126,7 +126,7 @@ export default class QueueProvider implements vscode.TreeDataProvider<vscode.Tre
     };
 
     public clear = () => {
-        this.storage.set("queue", []);
+        this.database.set("queue", []);
         this.refresh();
     };
 

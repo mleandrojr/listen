@@ -1,23 +1,23 @@
 import Listen from "../listen";
-import Storage from "../services/storage";
+import Database from "../services/database";
 import { ContentTreeItem } from "./treeItem";
 import { QueueType } from "../types/queue";
 
 export default class Queue {
 
     private listen: Listen;
-    private storage: Storage;
+    private database: Database;
     private selectedItem?: ContentTreeItem;
     private isDoubleClick: boolean = false;
 
     constructor(listen: Listen) {
         this.listen = listen;
-        this.storage = new Storage(this.listen.context);
+        this.database = new Database(this.listen.context);
     }
 
     previous = async () => {
 
-        const queue = this.storage.get("queue") || [];
+        const queue = this.database.get("queue") || [];
 
         let idx = null;
         for (let i = 0, length = queue.length; i < length; i++) {
@@ -65,7 +65,7 @@ export default class Queue {
 
     next = async () => {
 
-        const queue = this.storage.get("queue") || [];
+        const queue = this.database.get("queue") || [];
 
         let idx = null;
         for (let i = 0, length = queue.length; i < length; i++) {
@@ -90,7 +90,7 @@ export default class Queue {
 
     remove = async (item: QueueType) => {
 
-        const items: QueueType[] = this.storage.get("queue") || [];
+        const items: QueueType[] = this.database.get("queue") || [];
 
         let idx = null;
         for (let i = 0, length = items.length; i < length; i++) {
@@ -104,7 +104,7 @@ export default class Queue {
             items.splice(idx, 1);
         }
 
-        this.storage.set("queue", items);
+        this.database.set("queue", items);
         this.listen.queueProvider.refresh();
     };
 

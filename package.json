@@ -2,7 +2,7 @@
   "name": "listen",
   "displayName": "Listen!",
   "description": "Listen to podcasts and radio streams while coding.",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "publisher": "mleandrojr",
   "author": "Marcos Leandro",
   "icon": "resources/listen.png",

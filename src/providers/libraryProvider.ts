@@ -1,8 +1,8 @@
-import * as vscode from 'vscode';
-import Listen from '../listen';
-import Storage from '../services/storage';
-import { ContentTreeItem, PodcastItem, RadioItem } from '../libs/treeItem';
-import { PodcastType } from '../types/podcast';
+import * as vscode from "vscode";
+import Listen from "../listen";
+import database from "../services/database";
+import { ContentTreeItem, PodcastItem, RadioItem } from "../libs/treeItem";
+import { PodcastType } from "../types/podcast";
 
 export default class LibraryProvider implements vscode.TreeDataProvider<ContentTreeItem> {
 
@@ -10,11 +10,11 @@ export default class LibraryProvider implements vscode.TreeDataProvider<ContentT
     private _onDidChangeTreeData: vscode.EventEmitter<ContentTreeItem | undefined | null | void>;
     private listen: Listen;
     private data: ContentTreeItem[] = [];
-    private storage: Storage;
+    private database: database;
 
     public constructor(listen: Listen) {
         this.listen = listen;
-        this.storage = new Storage(this.listen.context);
+        this.database = new database(this.listen.context);
         this._onDidChangeTreeData = new vscode.EventEmitter<ContentTreeItem | undefined | null | void>();
         this.onDidChangeTreeData = this._onDidChangeTreeData.event;
         this.refresh();
@@ -67,7 +67,7 @@ export default class LibraryProvider implements vscode.TreeDataProvider<ContentT
 
     public markPodcastAsListened = (podcast: PodcastItem) => {
 
-        const podcasts: Record<string, any> = this.storage.get("podcasts");
+        const podcasts: Record<string, any> = this.database.get("podcasts");
         if (!podcasts[podcast.feed!]) {
             return;
         }
@@ -77,7 +77,7 @@ export default class LibraryProvider implements vscode.TreeDataProvider<ContentT
             episodes[episode].new = false;
         }
 
-        this.storage.set("podcasts", podcasts);
+        this.database.set("podcasts", podcasts);
         this.refresh();
     };
 
@@ -95,7 +95,7 @@ export default class LibraryProvider implements vscode.TreeDataProvider<ContentT
     private getPodcasts = (): PodcastItem[] => {
 
         const data = [];
-        const podcasts: Record<string, any> = this.storage.get("podcasts");
+        const podcasts: Record<string, any> = this.database.get("podcasts");
 
         for (const podcast in podcasts) {
             data.push(new PodcastItem(podcasts[podcast]));
@@ -107,7 +107,7 @@ export default class LibraryProvider implements vscode.TreeDataProvider<ContentT
     private getRadios = (): RadioItem[] => {
 
         const data = [];
-        const radios: Record<string, any> = this.storage.get("radios");
+        const radios: Record<string, any> = this.database.get("radios");
 
         for (const radio in radios) {
             data.push(new RadioItem(radios[radio].title, radios[radio].url));

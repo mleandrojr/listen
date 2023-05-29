@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import Listen from "../listen";
 import fetch from "node-fetch";
-import Storage from "../services/storage";
+import Database from "../services/database";
 import { XMLParser } from "fast-xml-parser";
 import { PodcastType } from "../types/podcast";
 import { EpisodeType } from "../types/episode";
@@ -9,11 +9,11 @@ import { EpisodeType } from "../types/episode";
 export default class Podcast {
 
     private listen: Listen;
-    private storage: Storage;
+    private database: Database;
 
     constructor(listen: Listen) {
         this.listen = listen;
-        this.storage = new Storage(this.listen.context);
+        this.database = new Database(this.listen.context);
     }
 
     public openDialog = async () => {
@@ -53,27 +53,24 @@ export default class Podcast {
             return;
         }
 
-        podcasts = this.storage.get("podcasts") || {};
+        podcasts = this.database.get("podcasts") || {};
         if (podcasts && podcasts.hasOwnProperty(feed)) {
             vscode.window.showErrorMessage(`The podcast ${feed} is already in the library.`);
             return;
         }
-
-        const thumbnailUrl = this.getThumbnailUrl(content);
-        const thumbnail = await this.getThumbnail(thumbnailUrl);
 
         podcasts[feed] = <PodcastType> {
             label: content.rss.channel.title,
             description: content.rss.channel.description,
             link: content.rss.channel.link,
             feed: feed,
-            thumbnail: thumbnail,
+            thumbnail: this.getThumbnailUrl(content),
             episodes: <Record<string, EpisodeType>> {}
         };
 
         podcasts = this.orderByName(podcasts);
 
-        this.storage.set("podcasts", podcasts);
+        this.database.set("podcasts", podcasts);
         this.listen.libraryProvider.refresh();
         this.addEpisodes(feed, content);
 
@@ -89,7 +86,7 @@ export default class Podcast {
 
     public updateAll = async () => {
 
-        const podcasts = <Record<string, PodcastType>> this.storage.get("podcasts") || {};
+        const podcasts = <Record<string, PodcastType>> this.database.get("podcasts") || {};
         for (const podcast in podcasts) {
             this.update(podcasts[podcast]);
         }
@@ -99,10 +96,10 @@ export default class Podcast {
 
     public remove = async (podcastItem: PodcastType): Promise<void> => {
 
-        const podcasts = <Record<string, PodcastType>> this.storage.get("podcasts") || {};
+        const podcasts = <Record<string, PodcastType>> this.database.get("podcasts") || {};
         delete podcasts[podcastItem.feed];
 
-        this.storage.set("podcasts", podcasts);
+        this.database.set("podcasts", podcasts);
 
         vscode.window.showInformationMessage(`The podcast ${podcastItem.label} was successfully removed.`);
         this.listen.libraryProvider.refresh();
@@ -110,7 +107,7 @@ export default class Podcast {
 
     public markAsRead = (podcastItem: PodcastType) => {
 
-        const storedData: Record<string, PodcastType> = this.storage.get("podcasts");
+        const storedData: Record<string, PodcastType> = this.database.get("podcasts");
         const podcast = storedData[podcastItem.feed];
 
         if (!podcast || !podcast.episodes.length) {
@@ -121,7 +118,7 @@ export default class Podcast {
             this.listen.episode.markAsRead(podcast.episodes[episode]);
         }
 
-        this.storage.set("podcasts", storedData);
+        this.database.set("podcasts", storedData);
         this.listen.libraryProvider.refresh();
     };
 
@@ -171,26 +168,13 @@ export default class Podcast {
         return content.rss.channel.image.url;
     };
 
-    private async getThumbnail(url: string): Promise<any> {
-
-        const response: Record<any, any> = await fetch(url);
-        const contentType = response.headers.get("content-type");
-        const content: string = Buffer.from(await response.arrayBuffer()).toString("base64");
-
-        if (response.status !== 200) {
-            return null;
-        }
-
-        return `data:${contentType};base64,${content}`;
-    }
-
     private addEpisodes = (feed: string, content: Record<string, any>|null|undefined): void => {
 
         if (!content) {
             return;
         }
 
-        const storedData: Record<string, PodcastType> = this.storage.get("podcasts");
+        const storedData: Record<string, PodcastType> = this.database.get("podcasts");
         if (!storedData || !storedData.hasOwnProperty(feed)) {
             return;
         }
@@ -204,7 +188,7 @@ export default class Podcast {
 
         const parsedEpisodes: Record<string, EpisodeType> = {...newEpisodes, ...episodes};
         storedData[feed].episodes = parsedEpisodes;
-        this.storage.set("podcasts", storedData);
+        this.database.set("podcasts", storedData);
     };
 
     private appendEpisode = (episodes: Record<string, EpisodeType>, episode: Record<string, any>): Record<string, EpisodeType> => {
