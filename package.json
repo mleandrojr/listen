@@ -2,7 +2,7 @@
   "name": "listen",
   "displayName": "Listen!",
   "description": "Listen to podcasts and radio streams while coding.",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "publisher": "mleandrojr",
   "author": "Marcos Leandro",
   "icon": "resources/listen.png",
@@ -47,6 +47,11 @@
       },
       {
         "command": "listen.markPodcastAsListened",
+        "title": "Mark as Listened",
+        "category": "listen.podcast"
+      },
+      {
+        "command": "listen.markEpisodeAsListened",
         "title": "Mark as Listened",
         "category": "listen.podcast"
       },
@@ -195,6 +200,10 @@
         },
         {
           "command": "listen.addToQueue",
+          "when": "view == listenLibrary && (viewItem == episode || viewItem == radio)"
+        },
+        {
+          "command": "listen.markEpisodeAsListened",
           "when": "view == listenLibrary && (viewItem == episode || viewItem == radio)"
         },
         {

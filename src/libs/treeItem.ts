@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import fetch from "node-fetch";
 
 export class ContentTreeItem extends vscode.TreeItem {
 
@@ -56,13 +55,27 @@ export class PodcastItem extends ContentTreeItem {
 
     constructor(podcast: Record<string, any>, children?: EpisodeItem[]) {
         super(podcast.label, children, vscode.TreeItemCollapsibleState.Collapsed);
-        this.label = podcast.label;
+
+        const newEpisodes = this.countNewEpisodes(podcast);
+
+        this.label = newEpisodes > 0 ? `(${newEpisodes}) ${podcast.label}` : podcast.label;
         this.description = podcast.description;
         this.feed = podcast.feed;
         this.children = this.getEpisodes(podcast);
         this.contextValue = "podcast";
         this.iconPath = vscode.Uri.parse(podcast.thumbnail.replace(/http:\/\//, "https://"));
     }
+
+    private countNewEpisodes = (podcast: Record<string, any>): number => {
+        let newEpisodes = 0;
+        for (const episode in podcast.episodes) {
+            if (podcast.episodes[episode].new) {
+                newEpisodes++;
+            }
+        }
+
+        return newEpisodes;
+    };
 
     private getEpisodes = (podcast: Record<string, any>) => {
 

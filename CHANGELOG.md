@@ -1,6 +1,10 @@
 # Change Log
 This is the pre-alpha release of Listen! It's a very simple (yet) extension that allows you to listen to your favorite podcasts inside the Visual Studio Code.
 
+### 0.0.12
+ - Added the unlistened episodes count to the podcast title.
+ - Added the `Mark all as listened` command to episodes.
+
 ### 0.0.11
 Changed back the library to globalState instead of globalStorage.
 

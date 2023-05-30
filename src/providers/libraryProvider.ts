@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import Listen from "../listen";
 import database from "../services/database";
-import { ContentTreeItem, PodcastItem, RadioItem } from "../libs/treeItem";
+import { ContentTreeItem, EpisodeItem, PodcastItem, RadioItem } from "../libs/treeItem";
 import { PodcastType } from "../types/podcast";
 
 export default class LibraryProvider implements vscode.TreeDataProvider<ContentTreeItem> {
@@ -75,6 +75,34 @@ export default class LibraryProvider implements vscode.TreeDataProvider<ContentT
         const episodes = podcasts[podcast.feed!].episodes;
         for (const episode in episodes) {
             episodes[episode].new = false;
+        }
+
+        this.database.set("podcasts", podcasts);
+        this.refresh();
+    };
+
+    public markEpisodeAsNew = (episode: EpisodeItem) => {
+
+        const podcasts: Record<string, any> = this.database.get("podcasts");
+        for (const podcast in podcasts) {
+            if (podcasts[podcast].episodes[episode.url!]) {
+                podcasts[podcast].episodes[episode.url!].new = true;
+                break;
+            }
+        }
+
+        this.database.set("podcasts", podcasts);
+        this.refresh();
+    };
+
+    public markEpisodeAsListened = (episode: EpisodeItem) => {
+
+        const podcasts: Record<string, any> = this.database.get("podcasts");
+        for (const podcast in podcasts) {
+            if (podcasts[podcast].episodes[episode.url!]) {
+                podcasts[podcast].episodes[episode.url!].new = false;
+                break;
+            }
         }
 
         this.database.set("podcasts", podcasts);
